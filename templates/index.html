@@ -24,10 +24,11 @@
   .cover-metrics {
     position: absolute;
     left: .75rem;
-    right: .75rem;
+    top: .75rem;
     bottom: .75rem;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(230px, calc(100% - 1.5rem));
+    display: flex;
+    flex-direction: column;
     gap: .35rem;
   }
   .cover-metric-item {
@@ -36,7 +37,8 @@
     backdrop-filter: blur(3px);
     border-radius: 10px;
     padding: .52rem .62rem;
-    min-height: 84px;
+    min-height: 78px;
+    width: 100%;
     display: flex;
     align-items: center;
   }
@@ -105,7 +107,12 @@
   }
 
   @media (max-width: 767px) {
-    .cover-metrics { grid-template-columns: 1fr; bottom: .55rem; }
+    .cover-metrics {
+      top: .55rem;
+      bottom: .55rem;
+      left: .55rem;
+      width: min(210px, calc(100% - 1.1rem));
+    }
     .case-cover { height: 320px; }
     .cover-metric-line { font-size: 1.2rem; }
   }
