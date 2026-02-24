@@ -3,13 +3,60 @@
 
 {% block head_extra %}
 <style>
+  .case-cover-wrap {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.18);
+    margin-bottom: 1rem;
+  }
   .case-cover {
     width: 100%;
-    height: 210px;
+    height: 220px;
     object-fit: cover;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.18);
+    display: block;
   }
+  .case-cover-darken {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5,12,25,.12) 0%, rgba(5,12,25,.7) 68%, rgba(5,12,25,.88) 100%);
+  }
+  .cover-metrics {
+    position: absolute;
+    left: .75rem;
+    right: .75rem;
+    bottom: .75rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .45rem;
+  }
+  .cover-metric-item {
+    border: 1px solid rgba(255,255,255,.24);
+    background: rgba(9,20,39,.7);
+    backdrop-filter: blur(3px);
+    border-radius: 10px;
+    padding: .4rem .45rem;
+    min-height: 56px;
+  }
+  .cover-metric-title {
+    font-size: .68rem;
+    color: rgba(255,255,255,.74);
+    display: flex;
+    align-items: center;
+    gap: .28rem;
+    line-height: 1.1;
+  }
+  .cover-metric-value {
+    margin-top: .22rem;
+    font-weight: 700;
+    font-size: .82rem;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .trend-up { color: #58f5b0; }
+  .trend-bars { color: #7cb9ff; }
+  .trend-donut { color: #fdd46b; }
+
   .metrics-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
   .metric-vivid {
     border-radius: 14px;
@@ -22,7 +69,10 @@
   .metric-icon { font-size: 1.15rem; }
   .metric-bar { height: 6px; border-radius: 999px; background: rgba(255,255,255,.18); overflow: hidden; }
   .metric-bar > span { display: block; height: 100%; width: 72%; background: linear-gradient(90deg, #00d4ff, #7e5bff); }
-  @media (max-width: 767px) { .metrics-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 767px) {
+    .metrics-grid, .cover-metrics { grid-template-columns: 1fr; }
+    .case-cover { height: 260px; }
+  }
 </style>
 {% endblock %}
 
@@ -34,13 +84,35 @@
 
 <div class="row g-4">
   {% for case in cases %}
+    {% set metrics = [
+      {'label': case.metric_1_label, 'value': case.metric_1, 'icon': '🍩', 'trend': '◔', 'trend_class': 'trend-donut'},
+      {'label': case.metric_2_label, 'value': case.metric_2, 'icon': '📊', 'trend': '▮▮▮', 'trend_class': 'trend-bars'},
+      {'label': case.metric_3_label, 'value': case.metric_3, 'icon': '📈', 'trend': '↗', 'trend_class': 'trend-up'}
+    ] %}
     <div class="col-lg-6">
       <article class="card-glass p-4 h-100">
-        <img
-          class="case-cover mb-3"
-          src="{{ url_for('static', filename=case.cover_image if case.cover_image else 'images/case-placeholder.svg') }}"
-          alt="Обложка кейса {{ case.title }}"
-        >
+        <div class="case-cover-wrap">
+          <img
+            class="case-cover"
+            src="{{ url_for('static', filename=case.cover_image if case.cover_image else 'images/case-placeholder.svg') }}"
+            alt="Обложка кейса {{ case.title }}"
+          >
+          <div class="case-cover-darken"></div>
+          <div class="cover-metrics">
+            {% for metric in metrics if metric.value %}
+              <div class="cover-metric-item">
+                <div class="cover-metric-title">
+                  <span>{{ metric.icon }}</span>
+                  <span>{{ metric.label if metric.label else 'Показатель ' ~ loop.index }}</span>
+                </div>
+                <div class="cover-metric-value">
+                  <span class="{{ metric.trend_class }}">{{ metric.trend }}</span>
+                  {{ metric.value }}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
 
         <h2 class="h4 fw-bold mb-1">{{ case.title }}</h2>
         <p class="text-muted-1 mb-2">{{ case.subtitle }} {% if case.duration %}• {{ case.duration }}{% endif %}</p>
@@ -49,11 +121,6 @@
         </div>
         <p class="text-muted-1">{{ case.teaser }}</p>
 
-        {% set metrics = [
-          {'label': case.metric_1_label, 'value': case.metric_1, 'icon': '🍩'},
-          {'label': case.metric_2_label, 'value': case.metric_2, 'icon': '📊'},
-          {'label': case.metric_3_label, 'value': case.metric_3, 'icon': '📈'}
-        ] %}
         <div class="metrics-grid mb-3">
           {% for metric in metrics if metric.value %}
             <div class="metric-vivid alt-{{ loop.index }}">
