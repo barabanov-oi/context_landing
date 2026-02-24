@@ -1,186 +1,160 @@
 {% extends 'base.html' %}
-{% block title %}Лента кейсов{% endblock %}
+{% block title %}Кейсы по юридической лидогенерации{% endblock %}
 
 {% block head_extra %}
 <style>
-  .case-cover-wrap {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,.18);
-    margin-bottom: 1rem;
-  }
-  .case-cover {
-    width: 100%;
-    height: 280px;
-    object-fit: cover;
-    display: block;
-  }
-  .case-cover-darken {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(5,12,25,.12) 0%, rgba(5,12,25,.7) 68%, rgba(5,12,25,.88) 100%);
-  }
-  .cover-metrics {
-    position: absolute;
-    left: .75rem;
-    top: .75rem;
-    bottom: .75rem;
-    width: min(230px, calc(100% - 1.5rem));
-    display: flex;
-    flex-direction: column;
-    gap: .35rem;
-  }
-  .cover-metric-item {
-    border: 1px solid rgba(255,255,255,.24);
-    background: rgba(9,20,39,.76);
-    backdrop-filter: blur(3px);
-    border-radius: 10px;
-    padding: .52rem .62rem;
-    min-height: 78px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-  }
-  .cover-metric-line {
-    color: #fff;
-    font-weight: 800;
-    font-size: 1.08rem;
-    line-height: 1.2;
-  }
-  .cover-metric-label {
-    color: rgba(255,255,255,.9);
-    font-weight: 600;
-    font-size: .82rem;
-    margin-bottom: .2rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .cover-metric-dynamic {
-    margin-top: .2rem;
-    color: rgba(255,255,255,.92);
-    font-size: .8rem;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .arrow-green { color: #4dff8a; margin-right: .24rem; font-weight: 900; }
-  .arrow-red { color: #ff8585; margin-right: .24rem; font-weight: 900; }
+  .hero-block { background: linear-gradient(135deg, #1d4ed8 0%, #0b5ed7 50%, #0f766e 100%); border-radius: 20px; padding: 2rem; border: 1px solid rgba(255,255,255,.2); }
+  .hero-kpi { background: rgba(6, 18, 36, .35); border: 1px solid rgba(255,255,255,.24); border-radius: 12px; padding: .75rem 1rem; }
+  .hero-kpi .value { font-size: 1.3rem; font-weight: 800; display: block; }
 
-  .case-stages-title {
-    font-size: .78rem;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.6);
-    margin-bottom: .35rem;
-  }
-  .case-stages-preview {
-    list-style: none;
-    padding-left: 0;
-    margin: 0 0 .9rem;
-    border-left: 2px solid rgba(73, 156, 255, .35);
-  }
-  .case-stages-preview li {
-    position: relative;
-    padding: .2rem .25rem .5rem 1rem;
-    color: rgba(255,255,255,.88);
-    border-bottom: 1px dashed rgba(255,255,255,.14);
-    font-size: .92rem;
-    line-height: 1.35;
-  }
-  .case-stages-preview li:last-child {
-    border-bottom: 0;
-    padding-bottom: .2rem;
-  }
-  .case-stages-preview li::before {
-    content: '';
-    position: absolute;
-    left: -7px;
-    top: .55rem;
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
-    background: #0d6efd;
-    box-shadow: 0 0 0 3px rgba(13,110,253,.2);
-  }
+  .warmup-list li { margin-bottom: .45rem; color: rgba(232,240,255,.92); }
+
+  .filter-wrap { background: #102341; border: 1px solid rgba(255,255,255,.16); border-radius: 14px; padding: 1rem; }
+
+  .case-link { text-decoration: none; color: inherit; display: block; height: 100%; }
+  .case-card { background: #1a2f52; border: 1px solid rgba(190,216,255,.25); border-radius: 16px; padding: 1rem; height: 100%; transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+  .case-link:hover .case-card { transform: translateY(-4px); border-color: rgba(72, 163, 255, .85); box-shadow: 0 16px 34px rgba(0,0,0,.34); }
+
+  .niche-icon { font-size: 1.4rem; margin-right: .55rem; }
+  .result-line { font-size: .92rem; color: #edf4ff; }
+  .source-chip { display: inline-block; padding: .18rem .55rem; border-radius: 999px; font-size: .75rem; margin-right: .35rem; margin-bottom: .35rem; font-weight: 700; }
+  .source-search { background: rgba(32, 197, 116, .2); color: #8effc0; border: 1px solid rgba(32,197,116,.45); }
+  .source-rsya { background: rgba(13, 110, 253, .2); color: #8ec0ff; border: 1px solid rgba(13,110,253,.45); }
+  .source-retarget { background: rgba(138, 43, 226, .22); color: #ddb2ff; border: 1px solid rgba(138,43,226,.45); }
+  .source-content { background: rgba(255, 193, 7, .2); color: #ffe18e; border: 1px solid rgba(255,193,7,.45); }
+
+  .animate-kpi { animation: pulseMetric .9s ease both; }
+  @keyframes pulseMetric { from { transform: scale(.95); opacity: .6; } to { transform: scale(1); opacity: 1; } }
+
+  .timeline { border-left: 2px solid rgba(125,181,255,.55); margin: 0; padding-left: 1rem; list-style: none; }
+  .timeline li { position: relative; padding: .2rem 0 .8rem; }
+  .timeline li::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: #76b6ff; position: absolute; left: -1.35rem; top: .45rem; }
 
   @media (max-width: 767px) {
-    .cover-metrics {
-      top: .55rem;
-      bottom: .55rem;
-      left: .55rem;
-      width: min(210px, calc(100% - 1.1rem));
-    }
-    .case-cover { height: 320px; }
-    .cover-metric-line { font-size: 1.2rem; }
+    .hero-block { padding: 1.4rem; }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<section class="mb-4">
-  <h1 class="display-6 fw-bold">Кейсы по юридической лидогенерации</h1>
-  <p class="text-muted-1">Карточки в ленте показывают обложку, показатели и этапы проекта.</p>
+<section class="hero-block mb-4">
+  <h1 class="display-6 fw-bold mb-2">Лидогенерация для юридических услуг через Яндекс Директ</h1>
+  <p class="mb-3 fs-5">Показываем реальные кейсы с прозрачными метриками: сколько лидов получили, какой был бюджет и какая стоимость обращения.</p>
+  <div class="row g-2 mb-3">
+    <div class="col-md-4"><div class="hero-kpi animate-kpi"><span class="value">CPL от 2 800 ₽</span><span>в юридической нише</span></div></div>
+    <div class="col-md-4"><div class="hero-kpi animate-kpi"><span class="value">3000+ лидов</span><span>для юристов и адвокатов</span></div></div>
+    <div class="col-md-4"><div class="hero-kpi animate-kpi"><span class="value">8 лет опыта</span><span>в legal performance</span></div></div>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="#cases" class="btn btn-light">Посмотреть кейсы</a>
+    <a href="#contacts" class="btn btn-outline-light">Получить аудит рекламы</a>
+  </div>
 </section>
 
-<div class="row g-4">
+<section class="row g-3 mb-4" id="about">
+  <div class="col-lg-6">
+    <article class="card-glass p-3 h-100">
+      <h2 class="h5 fw-bold">Почему лиды у юристов дорогие</h2>
+      <ul class="warmup-list mb-0 ps-3">
+        <li>Высокая конкуренция в поиске и перегретые ставки.</li>
+        <li>Смешение разных услуг в одной кампании без сегментации.</li>
+        <li>Потеря тёплого спроса без ретаргетинга и контент-догрева.</li>
+      </ul>
+    </article>
+  </div>
+  <div class="col-lg-6">
+    <article class="card-glass p-3 h-100">
+      <h2 class="h5 fw-bold">Как это решается</h2>
+      <ul class="warmup-list mb-0 ps-3">
+        <li>Кластеризация запросов по юридическим сценариям.</li>
+        <li>Сегментация аудитории и офферов по этапам принятия решения.</li>
+        <li>Связка Поиск + РСЯ + ретаргетинг для снижения CPL и роста CR.</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section class="card-glass p-3 mb-4" id="pricing">
+  <div class="row g-3 text-center">
+    <div class="col-md-4"><div class="h3 fw-bold mb-1">5500+</div><div class="text-muted-1">клиентов в legal и смежных нишах</div></div>
+    <div class="col-md-4"><div class="h3 fw-bold mb-1">8 лет</div><div class="text-muted-1">практики в контекстной рекламе</div></div>
+    <div class="col-md-4"><div class="h3 fw-bold mb-1">120 млн ₽</div><div class="text-muted-1">суммарного рекламного бюджета</div></div>
+  </div>
+</section>
+
+<section class="filter-wrap mb-3" id="cases">
+  <form class="row g-2 align-items-end" method="get">
+    <div class="col-md-5">
+      <label class="form-label" for="niche">Фильтр по нише</label>
+      <select class="form-select" id="niche" name="niche">
+        <option value="">Все ниши</option>
+        {% for niche in niches %}
+          <option value="{{ niche }}" {% if niche == selected_niche %}selected{% endif %}>{{ niche }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-5">
+      <label class="form-label" for="source">Фильтр по источнику</label>
+      <select class="form-select" id="source" name="source">
+        <option value="">Все источники</option>
+        {% for source in sources %}
+          <option value="{{ source }}" {% if source == selected_source %}selected{% endif %}>{{ source }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-primary" type="submit">Применить</button>
+    </div>
+  </form>
+</section>
+
+<div class="row g-3">
   {% for case in cases %}
-    {% set metrics = [
-      {'label': case.metric_1_label, 'before': case.metric_1_before, 'after': case.metric_1_after, 'dynamic': case.metric_1_dynamic, 'trend': case.metric_1_trend, 'color': case.metric_1_color},
-      {'label': case.metric_2_label, 'before': case.metric_2_before, 'after': case.metric_2_after, 'dynamic': case.metric_2_dynamic, 'trend': case.metric_2_trend, 'color': case.metric_2_color}
-    ] %}
-    <div class="col-lg-6">
-      <article class="card-glass p-4 h-100">
-        <div class="case-cover-wrap">
-          <img
-            class="case-cover"
-            src="{{ url_for('static', filename=case.cover_image if case.cover_image else 'images/case-placeholder.svg') }}"
-            alt="Обложка кейса {{ case.title }}"
-          >
-          <div class="case-cover-darken"></div>
-          <div class="cover-metrics">
-            {% for metric in metrics if metric.label and (metric.before or metric.after) %}
-              <div class="cover-metric-item">
-                <div>
-                  <div class="cover-metric-label">{{ metric.label }}</div>
-                  <div class="cover-metric-line">{% if metric.before and metric.after %}{{ metric.before }} → {{ metric.after }}{% elif metric.after %}{{ metric.after }}{% else %}{{ metric.before }}{% endif %}</div>
-                  {% if metric.dynamic %}
-                    <div class="cover-metric-dynamic">
-                      {% if metric.trend == 'down' %}
-                        <span class="{{ 'arrow-red' if metric.color == 'red' else 'arrow-green' }}">↓</span>
-                      {% else %}
-                        <span class="{{ 'arrow-red' if metric.color == 'red' else 'arrow-green' }}">↑</span>
-                      {% endif %}
-                      {{ metric.dynamic }}
-                    </div>
-                  {% endif %}
-                </div>
-              </div>
+    <div class="col-lg-4 col-md-6">
+      <a class="case-link" href="{{ url_for('case_detail', slug=case.slug) }}">
+        <article class="case-card">
+          <div class="d-flex align-items-center mb-2"><span class="niche-icon">{{ case.icon or '⚖️' }}</span><h2 class="h5 fw-bold mb-0">{{ case.title }}</h2></div>
+          <div class="result-line"><strong>{{ case.leads or '—' }} лидов</strong></div>
+          <div class="result-line">CPL: <strong>{{ case.cpl or '—' }}</strong> · CR: <strong>{{ case.cr or '—' }}</strong></div>
+          <div class="result-line mb-2">Бюджет: <strong>{{ case.budget or '—' }}</strong></div>
+          <div class="small text-muted-1 mb-2">{{ case.subtitle }}</div>
+          <div class="mb-2">
+            {% for source in case.sources %}
+              {% set cls = 'source-chip' %}
+              {% if source == 'Поиск' %}{% set cls = cls + ' source-search' %}{% endif %}
+              {% if source == 'РСЯ' %}{% set cls = cls + ' source-rsya' %}{% endif %}
+              {% if source == 'Ретаргет' %}{% set cls = cls + ' source-retarget' %}{% endif %}
+              {% if source == 'Контент' %}{% set cls = cls + ' source-content' %}{% endif %}
+              <span class="{{ cls }}">{{ source }}</span>
             {% endfor %}
           </div>
-        </div>
-
-        <h2 class="h4 fw-bold mb-1">{{ case.title }}</h2>
-        <p class="text-muted-1 mb-2">{{ case.subtitle }} {% if case.duration %}• {{ case.duration }}{% endif %}</p>
-        <div class="mb-2">
-          {% for tag in case.tags %}<span class="pill">{{ tag }}</span>{% endfor %}
-        </div>
-        <p class="text-muted-1">{{ case.teaser }}</p>
-
-        {% if case.project_stages %}
-          <p class="case-stages-title">Этапы проекта</p>
-          <ul class="case-stages-preview">
-            {% for stage in case.project_stages[:3] %}
-              <li>{{ stage }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-
-        <a class="btn btn-outline-light" href="{{ url_for('case_detail', slug=case.slug) }}">Читать кейс</a>
-      </article>
+          <button class="btn btn-outline-light btn-sm">Открыть кейс</button>
+        </article>
+      </a>
     </div>
+  {% else %}
+    <div class="col-12"><div class="alert alert-info">По выбранным фильтрам пока нет кейсов.</div></div>
   {% endfor %}
 </div>
+
+<section class="row g-3 mt-4">
+  <div class="col-lg-6">
+    <article class="card-glass p-3 h-100">
+      <h2 class="h5 fw-bold">Таймлайн проекта</h2>
+      <ul class="timeline">
+        <li><strong>1 неделя</strong> — аудит аккаунта и семантики.</li>
+        <li><strong>3 неделя</strong> — сегментация запросов и объявлений.</li>
+        <li><strong>5 неделя</strong> — оптимизация ставок и ретаргетинг.</li>
+        <li><strong>8 неделя</strong> — фиксация результата и масштабирование.</li>
+      </ul>
+    </article>
+  </div>
+  <div class="col-lg-6" id="contacts">
+    <article class="card-glass p-4 h-100 d-flex flex-column justify-content-center">
+      <h2 class="h4 fw-bold">Хотите такие же результаты?</h2>
+      <p class="text-muted-1">Получите аудит рекламной кампании и план роста лидов на 90 дней.</p>
+      <div><a href="{{ url_for('signup') }}" class="btn btn-success">Получить аудит</a></div>
+    </article>
+  </div>
+</section>
 {% endblock %}

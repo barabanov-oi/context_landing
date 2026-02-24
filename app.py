@@ -63,6 +63,13 @@ def load_cases() -> list[dict[str, Any]]:
         case.setdefault("metric_1_color", "green")
         case.setdefault("metric_2_color", "green")
         case.setdefault("project_stages", [])
+        case.setdefault("niche", "")
+        case.setdefault("sources", [])
+        case.setdefault("icon", "⚖️")
+        case.setdefault("leads", "")
+        case.setdefault("budget", "")
+        case.setdefault("cpl", "")
+        case.setdefault("cr", "")
     return cases
 
 
@@ -223,7 +230,39 @@ def validate_direct_connection(token: str, login: str) -> tuple[bool, str]:
 
 @app.route("/")
 def index() -> str:
-    return render_template("index.html", cases=load_cases())
+    cases = load_cases()
+
+    niches = sorted({case.get("niche", "").strip() for case in cases if case.get("niche")})
+    sources = sorted(
+        {
+            source.strip()
+            for case in cases
+            for source in case.get("sources", [])
+            if source and source.strip()
+        }
+    )
+
+    selected_niche = request.args.get("niche", "").strip()
+    selected_source = request.args.get("source", "").strip()
+
+    filtered_cases = [
+        case
+        for case in cases
+        if (not selected_niche or case.get("niche") == selected_niche)
+        and (
+            not selected_source
+            or selected_source in [source.strip() for source in case.get("sources", [])]
+        )
+    ]
+
+    return render_template(
+        "index.html",
+        cases=filtered_cases,
+        niches=niches,
+        sources=sources,
+        selected_niche=selected_niche,
+        selected_source=selected_source,
+    )
 
 
 @app.route("/signup", methods=["GET", "POST"])
