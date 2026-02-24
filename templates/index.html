@@ -17,8 +17,10 @@
     justify-content: center;
     text-align: center;
   }
-  .hero-kpi .value { font-size: 1.5rem; font-weight: 800; display: block; line-height: 1.1; }
-  .hero-kpi .label { font-size: .95rem; color: rgba(240,247,255,.9); margin-top: .4rem; }
+  .hero-kpi .value { font-size: 2.56rem; font-weight: 800; display: block; line-height: 1; }
+  .hero-kpi .label { font-size: .64rem; color: rgba(240,247,255,.9); margin-top: .35rem; line-height: 1.25; }
+
+  .hero-title { text-align: center; margin-top: 5em; margin-bottom: 5em; }
 
   .warmup-list li { margin-bottom: .45rem; color: rgba(232,240,255,.92); }
 
@@ -46,30 +48,32 @@
 
   @media (max-width: 767px) {
     .hero-block { padding: 1.4rem; }
+    .hero-kpi .value { font-size: 2rem; }
+    .hero-title { margin-top: 5em; margin-bottom: 5em; }
   }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="hero-block mb-4">
-  <h1 class="display-6 fw-bold mb-2">Помощь в росте конверсий, лидов, продаж, выручки</h1>
+  <h1 class="display-6 fw-bold hero-title">Помощь в росте конверсий, лидов, продаж, выручки</h1>
   <div class="row g-2 mb-3">
     <div class="col-md-4">
-      <div class="hero-kpi animate-kpi" data-count-target="8" data-count-suffix=" лет опыта в digital">
+      <div class="hero-kpi animate-kpi" data-count-target="8" data-count-suffix="">
         <span class="value">0</span>
-        <span class="label">8 лет опыта в digital</span>
+        <span class="label">лет опыта в digital</span>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="hero-kpi animate-kpi" data-count-target="18" data-count-suffix=" различных ниш">
+      <div class="hero-kpi animate-kpi" data-count-target="18" data-count-suffix="">
         <span class="value">0</span>
-        <span class="label">18 различных ниш</span>
+        <span class="label">различных ниш</span>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="hero-kpi animate-kpi" data-count-target="40000000" data-count-suffix=" руб./мес." data-count-prefix="" data-count-postfix=" максимальный бюджет одного размещения">
+      <div class="hero-kpi animate-kpi" data-count-target="40000000" data-count-suffix=" руб./мес." data-count-prefix="" data-count-postfix="">
         <span class="value">0</span>
-        <span class="label">40 000 000 руб./мес. максимальный бюджет одного размещения</span>
+        <span class="label">максимальный бюджет одного размещения</span>
       </div>
     </div>
   </div>
