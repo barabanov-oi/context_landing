@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Портфолио: кейсы Яндекс Директ в юридических услугах</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#0f1a2e;
+      --muted: rgba(255,255,255,.72);
+      --muted2: rgba(255,255,255,.55);
+      --stroke: rgba(255,255,255,.12);
+      --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --shadow2: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+
+    body{
+      background: radial-gradient(1200px 700px at 15% 15%, rgba(13,110,253,.35), transparent 60%),
+                  radial-gradient(900px 600px at 85% 30%, rgba(32,201,151,.25), transparent 55%),
+                  radial-gradient(1000px 700px at 50% 95%, rgba(255,193,7,.18), transparent 60%),
+                  var(--bg);
+      color: #fff;
+    }
+
+    .nav-glass{
+      background: rgba(15, 26, 46, .62);
+      border-bottom: 1px solid var(--stroke);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero{
+      padding: 84px 0 40px;
+    }
+
+    .hero-badge{
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.9);
+      border-radius: 999px;
+      display:inline-flex;
+      gap:.5rem;
+      align-items:center;
+      padding: .5rem .9rem;
+      font-size: .95rem;
+    }
+
+    .hero h1{
+      letter-spacing: -.02em;
+      line-height: 1.05;
+    }
+
+    .text-muted-1{ color: var(--muted); }
+    .text-muted-2{ color: var(--muted2); }
+
+    .btn-soft{
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--stroke);
+      color: #fff;
+    }
+    .btn-soft:hover{ background: rgba(255,255,255,.12); color:#fff; }
+
+    .card-glass{
+      background: rgba(15, 26, 46, .72);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+    }
+
+    .kpi{
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--stroke);
+      border-radius: 14px;
+      padding: 14px 14px;
+      height: 100%;
+    }
+    .kpi .label{ color: var(--muted2); font-size: .9rem; }
+    .kpi .value{ font-size: 1.35rem; font-weight: 700; letter-spacing: -.01em; }
+    .kpi .hint{ color: var(--muted); font-size: .9rem; }
+
+    .section{
+      padding: 34px 0;
+    }
+
+    .case-card{
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .case-card:hover{
+      transform: translateY(-6px);
+      box-shadow: var(--shadow);
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:.5rem;
+      align-items:center;
+      padding:.35rem .7rem;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.9);
+      font-size: .85rem;
+      margin-right:.35rem;
+      margin-bottom:.35rem;
+    }
+
+    .metric-badge{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      border-radius: 12px;
+      padding: .45rem .6rem;
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      margin-right:.45rem;
+      margin-bottom:.45rem;
+      font-weight: 600;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 99px; display:inline-block;
+      background: rgba(255,255,255,.6);
+    }
+
+    .divider{
+      height:1px; background: var(--stroke);
+      margin: 18px 0;
+    }
+
+    .timeline{
+      border-left: 2px solid rgba(255,255,255,.12);
+      padding-left: 16px;
+      margin-left: 6px;
+    }
+    .timeline-item{
+      position: relative;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed rgba(255,255,255,.12);
+    }
+    .timeline-item:last-child{ border-bottom:0; padding-bottom:0; margin-bottom:0; }
+    .timeline-item::before{
+      content:"";
+      position:absolute;
+      left:-22px; top: 2px;
+      width: 12px; height:12px; border-radius:99px;
+      background: rgba(13,110,253,.95);
+      box-shadow: 0 0 0 6px rgba(13,110,253,.18);
+    }
+
+    .chart-wrap{
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--stroke);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .muted-list li{ color: var(--muted); margin-bottom: .35rem; }
+    .footer{
+      padding: 28px 0 40px;
+      border-top: 1px solid var(--stroke);
+      color: var(--muted2);
+    }
+
+    .small-note{
+      font-size: .9rem;
+      color: rgba(255,255,255,.6);
+    }
+
+    .sticky-cta{
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 1050;
+      border-radius: 999px;
+      padding: 10px 12px;
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      background: rgba(15, 26, 46, .72);
+      border: 1px solid var(--stroke);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow2);
+    }
+    .sticky-cta .cta-title{ font-weight: 700; margin:0; font-size: .95rem; }
+    .sticky-cta .cta-sub{ margin:0; font-size:.85rem; color: var(--muted2); }
+
+    @media (max-width: 992px){
+      .hero{ padding: 74px 0 30px; }
+      .sticky-cta{ left: 12px; right: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg nav-glass fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-white" href="#top">Портфолио • Яндекс Директ</a>
+      <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto gap-lg-2">
+          <li class="nav-item"><a class="nav-link text-muted-1" href="#cases">Кейсы</a></li>
+          <li class="nav-item"><a class="nav-link text-muted-1" href="#approach">Подход</a></li>
+          <li class="nav-item"><a class="nav-link text-muted-1" href="#charts">Графики</a></li>
+          <li class="nav-item"><a class="nav-link text-muted-1" href="#stack">Стек</a></li>
+          <li class="nav-item"><a class="nav-link text-muted-1" href="#contact">Контакты</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header id="top" class="hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+
+          <div class="hero-badge mb-3">
+            <span class="dot" style="background: rgba(32,201,151,.9)"></span>
+            <span>Юридические услуги • Поиск + РСЯ • Яндекс Директ</span>
+          </div>
+
+          <h1 class="display-5 fw-bold mb-3">
+            5 кейсов: как я получал лиды в юр-нише<br class="d-none d-md-block" />
+            и улучшал экономику рекламы
+          </h1>
+
+          <p class="lead text-muted-1 mb-4">
+            Страница сделана под резюме: компактно, по делу, с показателями, гипотезами и тем, что именно было сделано.
+            Данные обезличены и смоделированы в реалистичных диапазонах.
+          </p>
+
+          <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-primary btn-lg" href="#cases">Смотреть кейсы</a>
+            <a class="btn btn-soft btn-lg" href="#charts">Сводные графики</a>
+            <button class="btn btn-soft btn-lg" data-bs-toggle="modal" data-bs-target="#cvModal">
+              Коротко обо мне
+            </button>
+          </div>
+
+          <p class="small-note mt-3 mb-0">
+            Фокус: юридическая лидогенерация (банкротство, ДТП/страховые, миграция, семейное, взыскание долгов B2B).
+          </p>
+        </div>
+
+        <div class="col-lg-5">
+          <div class="card card-glass p-3 p-md-4">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <h4 class="fw-bold mb-1">Итоги по 5 кейсам</h4>
+                <p class="text-muted-2 mb-0">Сводка KPI (по периодам кампаний)</p>
+              </div>
+              <span class="pill">резюме-ready</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">Лидов (суммарно)</div>
+                  <div class="value">1 240</div>
+                  <div class="hint">по всем кейсам</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">Средний CPL</div>
+                  <div class="value">2 980 ₽</div>
+                  <div class="hint">по портфелю</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">Конверсия (средняя)</div>
+                  <div class="value">8,1%</div>
+                  <div class="hint">клик → лид</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">Доля Поиска</div>
+                  <div class="value">62%</div>
+                  <div class="hint">в расходе</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="d-flex flex-wrap">
+              <span class="pill">цели/сквозная аналитика</span>
+              <span class="pill">минус-слова и intent</span>
+              <span class="pill">ретаргетинг</span>
+              <span class="pill">A/B креативов</span>
+              <span class="pill">авто-правила</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- KPI STRIP -->
+  <section class="section pt-0">
+    <div class="container">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <div class="kpi">
+            <div class="label">CTR Поиск</div>
+            <div class="value">11–16%</div>
+            <div class="hint">в зависимости от ниши</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="kpi">
+            <div class="label">CTR РСЯ</div>
+            <div class="value">1,2–2,4%</div>
+            <div class="hint">креативы + сегменты</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="kpi">
+            <div class="label">CR (в среднем)</div>
+            <div class="value">6–11%</div>
+            <div class="hint">клик → лид</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="kpi">
+            <div class="label">Окно оптимизации</div>
+            <div class="value">7–21 дн.</div>
+            <div class="hint">по стратегии</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASES -->
+  <section id="cases" class="section">
+    <div class="container">
+      <div class="row align-items-end mb-3 g-2">
+        <div class="col-lg-8">
+          <h2 class="fw-bold mb-2">Кейсы</h2>
+          <p class="text-muted-1 mb-0">
+            Структура каждого кейса: <b>задача → гипотеза → действия → результат → выводы</b>.
+          </p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <div class="d-flex justify-content-lg-end gap-2 flex-wrap">
+            <button class="btn btn-soft" onclick="scrollToId('approach')">Как работаю</button>
+            <button class="btn btn-soft" onclick="scrollToId('contact')">Связаться</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+
+        <!-- Case 1 -->
+        <div class="col-lg-6">
+          <div class="card card-glass case-card p-3 p-md-4 h-100">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <h4 class="fw-bold mb-1">1) Банкротство физлиц — Москва</h4>
+                <p class="text-muted-2 mb-2">Поиск + РСЯ • 8 недель • лид-форма + сайт</p>
+              </div>
+              <span class="pill">топ-ниша</span>
+            </div>
+
+            <div class="d-flex flex-wrap mb-2">
+              <span class="metric-badge"><span class="dot" style="background: rgba(32,201,151,.9)"></span>CPL ↓ 42%</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(255,193,7,.9)"></span>CTR Поиск 14,8%</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(13,110,253,.9)"></span>CR 9,4%</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-2">Задача</h6>
+                <ul class="muted-list mb-0">
+                  <li>Снизить CPL без просадки качества</li>
+                  <li>Отсечь «консультации ради консультаций»</li>
+                  <li>Стабилизировать объём лидов</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-2">Гипотеза</h6>
+                <ul class="muted-list mb-0">
+                  <li>Сегментация интента даст +CR</li>
+                  <li>Отдельные офферы под сценарии</li>
+                  <li>Чистка семантики снизит мусор</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h6 class="fw-bold mb-2">Что сделал</h6>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Intent-разметка запросов</b> (горячие/тёплые/инфо) + отдельные посадочные посылы</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Пересборка структуры</b>: одно направление → один оффер → один набор объявлений</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Минус-слова</b> и исключение «бесплатно/отзывы/форум/образец»</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>РСЯ</b>: 3 сегмента (широкий / интересы / ретаргет), отдельные креативы</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h6 class="fw-bold mb-2">Результат</h6>
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">Было / стало (CPL)</div>
+                  <div class="value">4 900 → 2 840 ₽</div>
+                  <div class="hint">–42% за 8 недель</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">Лидов / нед.</div>
+                  <div class="value">90 → 140</div>
+                  <div class="hint">+55% при снижении CPL</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h6 class="fw-bold mb-2">Вывод</h6>
+            <p class="text-muted-1 mb-0">
+              В «банкротстве» победа почти всегда в <b>чистоте интента</b> и разнесении сценариев. РСЯ работает как «догрев»,
+              если строго отделять ретаргетинг от широкой аудитории.
+            </p>
+          </div>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="col-lg-6">
+          <div class="card card-glass case-card p-3 p-md-4 h-100">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <h4 class="fw-bold mb-1">2) Юрист по ДТП и страховым спорам</h4>
+                <p class="text-muted-2 mb-2">Поиск (горячие) + ретаргет • 6 недель</p>
+              </div>
+              <span class="pill">горячий спрос</span>
+            </div>
+
+            <div class="d-flex flex-wrap mb-2">
+              <span class="metric-badge"><span class="dot" style="background: rgba(32,201,151,.9)"></span>Лиды × 3,1</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(255,193,7,.9)"></span>CTR Поиск 16,2%</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(13,110,253,.9)"></span>CR 10,2%</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <h6 class="fw-bold mb-2">Задача</h6>
+            <ul class="muted-list">
+              <li>Забрать «горячий» спрос по ОСАГО/КАСКО</li>
+              <li>Максимально быстро выйти на объём</li>
+              <li>Сдержать CPL в верхней границе</li>
+            </ul>
+
+            <h6 class="fw-bold mb-2">Что сделал</h6>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Точная кластеризация</b>: «выплата занижена», «отказ», «экспертиза», «эвакуация/ущерб»</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Три уровня ставок</b>: ультра-горячие → горячие → тёплые (разные бюджеты)</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Формулировки</b>: «срок», «бесплатная оценка перспектив», «судебная практика»</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Ретаргетинг</b>: посетители страниц «калькулятор/кейсы/документы», частота ограничена</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">Лидов / нед.</div>
+                  <div class="value">35 → 109</div>
+                  <div class="hint">×3,1 за 6 недель</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">CPL</div>
+                  <div class="value">3 650 ₽</div>
+                  <div class="hint">на горячем поиске</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="text-muted-1 mb-0">
+              В ДТП/страховых ключевое — <b>скорость реакции</b> и узкая упаковка. Здесь логика ближе к e-commerce:
+              быстрый тест → масштабирование победителей → защита от мусора.
+            </p>
+          </div>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="col-lg-6">
+          <div class="card card-glass case-card p-3 p-md-4 h-100">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <h4 class="fw-bold mb-1">3) Миграционный юрист — ВНЖ/гражданство</h4>
+                <p class="text-muted-2 mb-2">РСЯ + Поиск (точечный) • 10 недель</p>
+              </div>
+              <span class="pill">длинный цикл</span>
+            </div>
+
+            <div class="d-flex flex-wrap mb-2">
+              <span class="metric-badge"><span class="dot" style="background: rgba(255,193,7,.9)"></span>CTR РСЯ 2,1%</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(13,110,253,.9)"></span>CR 6,1%</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(32,201,151,.9)"></span>CPL 2 450 ₽</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-2">Задача</h6>
+                <ul class="muted-list mb-0">
+                  <li>Стабильный поток лидов при длительном выборе</li>
+                  <li>Снизить зависимость от горячего поиска</li>
+                  <li>Отделить целевых от «спросить по дружбе»</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-2">Гипотеза</h6>
+                <ul class="muted-list mb-0">
+                  <li>РСЯ + догрев даст лучший CPL</li>
+                  <li>Контент-страницы поднимут CR</li>
+                  <li>Микроцели улучшат оптимизацию</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h6 class="fw-bold mb-2">Что сделал</h6>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Сегменты РСЯ</b>: интересы, look-alike, аудитории по поведению (посетители статей)</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Креативы</b>: «пошаговый план», «сроки и риски», «чек-лист документов»</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Микроцели</b>: просмотр 60 сек, скролл 75%, открытие формы, клик по WhatsApp/Telegram</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Точечный поиск</b>: «юрист по ВНЖ + город», «гражданство через ...»</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">Лидов / мес.</div>
+                  <div class="value">120</div>
+                  <div class="hint">стабильный уровень</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">CPL</div>
+                  <div class="value">2 450 ₽</div>
+                  <div class="hint">на микс Поиск+РСЯ</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="text-muted-1 mb-0">
+              В миграции выигрывает тот, кто строит <b>воронку доверия</b>: полезный контент → ретаргет → консультация.
+            </p>
+          </div>
+        </div>
+
+        <!-- Case 4 -->
+        <div class="col-lg-6">
+          <div class="card card-glass case-card p-3 p-md-4 h-100">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <h4 class="fw-bold mb-1">4) Семейный юрист — развод/раздел имущества</h4>
+                <p class="text-muted-2 mb-2">Поиск + ретаргет РСЯ • 9 недель</p>
+              </div>
+              <span class="pill">эмоциональная ниша</span>
+            </div>
+
+            <div class="d-flex flex-wrap mb-2">
+              <span class="metric-badge"><span class="dot" style="background: rgba(32,201,151,.9)"></span>+78% заявок</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(255,193,7,.9)"></span>CTR Поиск 12,6%</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(13,110,253,.9)"></span>CR 8,2%</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <h6 class="fw-bold mb-2">Что сделал</h6>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Разнес направления</b>: «дети/алименты», «имущество», «соглашение», «суд»</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Офферы</b> под «страхи»: сроки, шанс выиграть, прогноз стоимости, стратегия</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Ретаргет</b>: кейсы, статьи, калькулятор госпошлины → форма</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>A/B</b>: заголовки «развод без согласия», «раздел имущества», «алименты»</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">Заявок / нед.</div>
+                  <div class="value">45 → 80</div>
+                  <div class="hint">+78% объёма</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="kpi">
+                  <div class="label">CPL</div>
+                  <div class="value">2 950 ₽</div>
+                  <div class="hint">при росте объёма</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="text-muted-1 mb-0">
+              В семейке важна <b>эмпатия в креативах</b> и сегментация «боль → решение». Ретаргет увеличивает конверсию заметнее, чем в других юр-нишах.
+            </p>
+          </div>
+        </div>
+
+        <!-- Case 5 -->
+        <div class="col-lg-12">
+          <div class="card card-glass case-card p-3 p-md-4">
+            <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
+              <div>
+                <h4 class="fw-bold mb-1">5) Взыскание долгов с юрлиц — B2B</h4>
+                <p class="text-muted-2 mb-2">Поиск (узкий) + РСЯ (догрев) • 12 недель</p>
+              </div>
+              <div class="d-flex flex-wrap">
+                <span class="pill">B2B</span>
+                <span class="pill">дорогая заявка</span>
+                <span class="pill">качество лидов</span>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap mb-2">
+              <span class="metric-badge"><span class="dot" style="background: rgba(32,201,151,.9)"></span>CPL 3 200 ₽</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(255,193,7,.9)"></span>CTR Поиск 12,1%</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(13,110,253,.9)"></span>CR 7,8%</span>
+              <span class="metric-badge"><span class="dot" style="background: rgba(255,255,255,.7)"></span>SQL rate 38%</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row g-4">
+              <div class="col-lg-4">
+                <h6 class="fw-bold mb-2">Задача</h6>
+                <ul class="muted-list mb-0">
+                  <li>Не «лиды», а лиды, которые доходят до сделки</li>
+                  <li>Выключить микробизнес и нецелевые запросы</li>
+                  <li>Сделать прогнозируемый поток SQL</li>
+                </ul>
+              </div>
+
+              <div class="col-lg-4">
+                <h6 class="fw-bold mb-2">Ключевая гипотеза</h6>
+                <ul class="muted-list mb-0">
+                  <li>B2B лучше конвертит на узких формулировках</li>
+                  <li>Квалификация лидов на ленде снизит мусор</li>
+                  <li>Ретаргет нужен, но с жёсткой частотой</li>
+                </ul>
+              </div>
+
+              <div class="col-lg-4">
+                <h6 class="fw-bold mb-2">Что сделал</h6>
+                <ul class="muted-list mb-0">
+                  <li>Семантика: «претензия», «арбитраж», «договор поставки»</li>
+                  <li>Отдельные кампании по отрасли: стройка / логистика / услуги</li>
+                  <li>Форма с квалификацией: сумма, договор, стадия претензии</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="kpi">
+                  <div class="label">Лидов / мес.</div>
+                  <div class="value">150</div>
+                  <div class="hint">при узком таргетинге</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="kpi">
+                  <div class="label">SQL rate</div>
+                  <div class="value">38%</div>
+                  <div class="hint">после квалификации</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="kpi">
+                  <div class="label">CPL</div>
+                  <div class="value">3 200 ₽</div>
+                  <div class="hint">с фокусом на качество</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="text-muted-1 mb-0">
+              B2B-взыскание — ниша, где победа не в дешёвом клике, а в <b>встроенной квалификации</b> и отраслевых сценариях.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- APPROACH -->
+  <section id="approach" class="section">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <div class="card card-glass p-3 p-md-4 h-100">
+            <h3 class="fw-bold mb-2">Как я веду проекты</h3>
+            <p class="text-muted-1 mb-3">
+              В юр-нише важно быстро отделить «мусор» от лидов, которые доходят до продажи. Мой подход — от интента и аналитики.
+            </p>
+
+            <div class="divider"></div>
+
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Диагностика</b>: цели, формы, источники, конкурентный обзор офферов</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Семантика</b>: intent-кластеры + минусация + негативные сценарии</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Структура</b>: «направление → оффер → группа → креативы»</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Тесты</b>: A/B заголовков, посадочных посылов, форм</div>
+              </div>
+              <div class="timeline-item">
+                <div class="text-muted-1"><b>Масштаб</b>: перенос бюджета на победителей + защита от выгорания</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="small-note mb-0">
+              Дополнительно: автоматизация рутинных проверок и отчётности (скрипты/сервисы), правила и алерты по KPI.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <div class="card card-glass p-3 p-md-4 h-100">
+            <h3 class="fw-bold mb-2">Что отличает сильный кейс в резюме</h3>
+            <p class="text-muted-1 mb-3">
+              Работодателю важны не «настройка кампаний», а: <b>какой был контекст, что поменяли, почему это сработало</b>.
+            </p>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="kpi">
+                  <div class="label">1) Контекст</div>
+                  <div class="value">ниша • гео • срок</div>
+                  <div class="hint">и ограничения: бюджет/сезонность</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="kpi">
+                  <div class="label">2) Решение</div>
+                  <div class="value">гипотезы → тест</div>
+                  <div class="hint">почему именно это делали</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="kpi">
+                  <div class="label">3) Метрики</div>
+                  <div class="value">CPL • CR • объём</div>
+                  <div class="hint">до/после и период</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="kpi">
+                  <div class="label">4) Выводы</div>
+                  <div class="value">что повторить</div>
+                  <div class="hint">и что не делать снова</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h6 class="fw-bold mb-2">Формула «сильной» строчки для резюме</h6>
+            <p class="text-muted-1 mb-0">
+              «В нише <b>Х</b> за <b>N недель</b> снизил CPL с <b>A</b> до <b>B</b> и поднял объём лидов на <b>%</b>,
+              переразметив intent, пересобрав структуру и внедрив ретаргет/микроцели».
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHARTS -->
+  <section id="charts" class="section">
+    <div class="container">
+      <div class="row align-items-end mb-3 g-2">
+        <div class="col-lg-8">
+          <h2 class="fw-bold mb-2">Сводные графики</h2>
+          <p class="text-muted-1 mb-0">
+            Наглядно: где сильнее CR, как отличается CPL и какие каналы тянут объём.
+          </p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <span class="pill">Chart.js</span>
+          <span class="pill">обезличено</span>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="chart-wrap">
+            <h6 class="fw-bold mb-2">CPL по кейсам (₽)</h6>
+            <canvas id="cplChart" height="140"></canvas>
+            <p class="small-note mt-2 mb-0">Цель: держать CPL в реалистичных вилках и показывать «до/после» там, где важно.</p>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="chart-wrap">
+            <h6 class="fw-bold mb-2">CR по кейсам (%)</h6>
+            <canvas id="crChart" height="140"></canvas>
+            <p class="small-note mt-2 mb-0">CR учитывает качество посадочных и силу интента (особенно на Поиске).</p>
+          </div>
+        </div>
+
+        <div class="col-lg-12">
+          <div class="chart-wrap">
+            <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
+              <div>
+                <h6 class="fw-bold mb-1">Структура расхода: Поиск vs РСЯ (%)</h6>
+                <p class="small-note mb-0">Усреднённое распределение по портфелю. В «горячих» нишах поиск доминирует.</p>
+              </div>
+              <span class="pill">mix strategy</span>
+            </div>
+            <div class="mt-3">
+              <canvas id="mixChart" height="120"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section id="stack" class="section">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="card card-glass p-3 p-md-4 h-100">
+            <h3 class="fw-bold mb-2">Инструменты</h3>
+            <p class="text-muted-1 mb-3">
+              Показать, что ты не просто «нажал кнопки», а управляешь системой: аналитика, тесты, автоматизация.
+            </p>
+
+            <div class="divider"></div>
+
+            <div class="d-flex flex-wrap">
+              <span class="pill">Яндекс Директ: Поиск/РСЯ</span>
+              <span class="pill">Мастер кампаний</span>
+              <span class="pill">ретаргетинг</span>
+              <span class="pill">минусация</span>
+              <span class="pill">A/B креативов</span>
+              <span class="pill">Яндекс Метрика</span>
+              <span class="pill">Цели/Микроцели</span>
+              <span class="pill">сквозная аналитика</span>
+              <span class="pill">UTM/разметка</span>
+              <span class="pill">отчёты/алерты</span>
+              <span class="pill">автоматизация</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <h6 class="fw-bold mb-2">Автоматизация (в резюме звучит сильно)</h6>
+            <ul class="muted-list mb-0">
+              <li>Авто-отчёты по KPI (CPL/CR/CPA), контроль отклонений</li>
+              <li>Сбор конкурентных объявлений и изменений офферов</li>
+              <li>Сервисы/скрипты для ускорения минусации и чистки семантики</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="card card-glass p-3 p-md-4 h-100">
+            <h3 class="fw-bold mb-2">Что можно прикрепить к резюме</h3>
+            <p class="text-muted-1 mb-3">
+              Чтобы HR и руководителю было легко «продать» тебя внутри компании.
+            </p>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="kpi">
+                  <div class="label">1) One-pager</div>
+                  <div class="value">1 стр. кейс</div>
+                  <div class="hint">задача → решение → KPI</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="kpi">
+                  <div class="label">2) Скриншоты</div>
+                  <div class="value">Директ/Метрика</div>
+                  <div class="hint">без данных клиента</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="kpi">
+                  <div class="label">3) Таблица тестов</div>
+                  <div class="value">гипотеза → вывод</div>
+                  <div class="hint">по креативам/офферам</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="kpi">
+                  <div class="label">4) Плейбук</div>
+                  <div class="value">чек-листы</div>
+                  <div class="hint">структура запуска/оптимизации</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="text-muted-1 mb-0">
+              Если нужно — добавь в кейсы <b>скриншоты</b> (без цифр аккаунта/названий клиента) и 2–3 <b>креатива</b>.
+              Это резко повышает доверие.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <div class="container">
+      <div class="card card-glass p-3 p-md-4">
+        <div class="row align-items-center g-3">
+          <div class="col-lg-8">
+            <h3 class="fw-bold mb-2">Контакты</h3>
+            <p class="text-muted-1 mb-0">
+              Подставь сюда свои контакты. Если размещаешь на GitHub Pages / Tilda / любой хостинг — готово.
+            </p>
+          </div>
+          <div class="col-lg-4 text-lg-end">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactModal">Открыть форму</button>
+            <button class="btn btn-soft ms-2" onclick="copyLink()">Скопировать ссылку</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>© 2026 • Портфолио кейсов (обезличено) • Яндекс Директ</div>
+        <div class="text-muted-2">Сделано на Bootstrap 5 + Chart.js</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sticky CTA -->
+  <div class="sticky-cta">
+    <div>
+      <p class="cta-title mb-0">Нужен такой же формат под резюме?</p>
+      <p class="cta-sub mb-0">Могу адаптировать под вакансию: офферы, KPI, подачу.</p>
+    </div>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#cvModal">Обо мне</button>
+  </div>
+
+  <!-- MODAL: About / CV -->
+  <div class="modal fade" id="cvModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content" style="background: rgba(15, 26, 46, .92); border: 1px solid rgba(255,255,255,.12); color:#fff;">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,.12);">
+          <h5 class="modal-title fw-bold">Коротко обо мне (блок для резюме)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted-1">
+            Директолог с фокусом на performance и аналитике. В юридической тематике работаю через intent-сегментацию,
+            чистую структуру кампаний и системную оптимизацию по данным. Умею автоматизировать рутину (отчёты, проверки, алерты).
+          </p>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="kpi">
+                <div class="label">Сильные стороны</div>
+                <div class="value">структура + аналитика</div>
+                <div class="hint">и контроль качества лидов</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="kpi">
+                <div class="label">Ведение</div>
+                <div class="value">поиск + РСЯ</div>
+                <div class="hint">включая ретаргет</div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="kpi">
+                <div class="label">Что добавляет ценность бизнесу</div>
+                <div class="value">рост объёма без потери экономики</div>
+                <div class="hint">и снижение мусора за счёт intent и квалификации</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <p class="small-note mb-0">
+            Заменить этот текст на твою версию (1–2 абзаца) и добавить цифры/ниши, которые важны под вакансию.
+          </p>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,.12);">
+          <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactModal">Связаться</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Contact -->
+  <div class="modal fade" id="contactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: rgba(15, 26, 46, .92); border: 1px solid rgba(255,255,255,.12); color:#fff;">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,.12);">
+          <h5 class="modal-title fw-bold">Контактная форма</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted-1">
+            Это демо-форма. Подставь ссылки на Telegram/почту или подключи отправку на свой бэкенд.
+          </p>
+          <form onsubmit="event.preventDefault(); alert('Демо: форма не отправляет данные. Подключи обработчик/CRM.');">
+            <div class="mb-3">
+              <label class="form-label text-muted-1">Имя</label>
+              <input class="form-control" placeholder="Как к вам обращаться?" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-muted-1">Контакт</label>
+              <input class="form-control" placeholder="Telegram / Email / Телефон" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-muted-1">Сообщение</label>
+              <textarea class="form-control" rows="4" placeholder="Пара строк о задаче/вакансии"></textarea>
+            </div>
+            <button class="btn btn-primary w-100">Отправить</button>
+          </form>
+          <div class="divider"></div>
+          <p class="small-note mb-0">
+            Быстрый вариант: вместо формы добавь 2 кнопки: <b>Telegram</b> и <b>Email</b>.
+          </p>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,.12);">
+          <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    function scrollToId(id){
+      document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    function copyLink(){
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        alert("Ссылка скопирована: " + url);
+      }).catch(() => {
+        alert("Не удалось скопировать. Скопируйте вручную: " + url);
+      });
+    }
+
+    // ---- Charts ----
+    // Data (обезличено, реалистично)
+    const labels = [
+      "Банкротство (Мск)",
+      "ДТП/страховые",
+      "Миграция (ВНЖ)",
+      "Семейное право",
+      "Взыскание долгов B2B"
+    ];
+
+    // CPL after optimization
+    const cplData = [2840, 3650, 2450, 2950, 3200];
+
+    // CR click -> lead
+    const crData = [9.4, 10.2, 6.1, 8.2, 7.8];
+
+    // Mix spend share avg
+    const mixLabels = ["Поиск", "РСЯ"];
+    const mixData = [62, 38];
+
+    // CPL chart
+    new Chart(document.getElementById("cplChart"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          label: "CPL (₽)",
+          data: cplData
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` CPL: ${ctx.raw.toLocaleString('ru-RU')} ₽`
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: "rgba(255,255,255,.75)" }, grid: { color: "rgba(255,255,255,.08)" } },
+          y: { ticks: { color: "rgba(255,255,255,.75)" }, grid: { color: "rgba(255,255,255,.08)" } }
+        }
+      }
+    });
+
+    // CR chart
+    new Chart(document.getElementById("crChart"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          label: "CR (%)",
+          data: crData
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` CR: ${ctx.raw.toLocaleString('ru-RU')}%`
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: "rgba(255,255,255,.75)" }, grid: { color: "rgba(255,255,255,.08)" } },
+          y: { ticks: { color: "rgba(255,255,255,.75)" }, grid: { color: "rgba(255,255,255,.08)" } }
+        }
+      }
+    });
+
+    // Mix chart
+    new Chart(document.getElementById("mixChart"), {
+      type: "doughnut",
+      data: {
+        labels: mixLabels,
+        datasets: [{
+          label: "Доля расхода (%)",
+          data: mixData
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: { color: "rgba(255,255,255,.78)" }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` ${ctx.label}: ${ctx.raw}%`
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
