@@ -1,0 +1,29 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="675" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1b2a4a"/>
+      <stop offset="1" stop-color="#10374e"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="200" y1="120" x2="1020" y2="560" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00D4FF"/>
+      <stop offset="1" stop-color="#7E5BFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="210" cy="180" r="78" stroke="url(#ring)" stroke-width="28"/>
+  <rect x="330" y="145" width="410" height="28" rx="14" fill="#FFFFFF" fill-opacity="0.7"/>
+  <rect x="330" y="195" width="290" height="22" rx="11" fill="#FFFFFF" fill-opacity="0.4"/>
+
+  <rect x="180" y="320" width="840" height="220" rx="24" fill="#ffffff" fill-opacity="0.08"/>
+  <rect x="230" y="460" width="70" height="40" rx="12" fill="#3DFFE0" fill-opacity="0.85"/>
+  <rect x="320" y="420" width="70" height="80" rx="12" fill="#7CB9FF" fill-opacity="0.85"/>
+  <rect x="410" y="375" width="70" height="125" rx="12" fill="#C69CFF" fill-opacity="0.85"/>
+  <rect x="500" y="395" width="70" height="105" rx="12" fill="#FFD66B" fill-opacity="0.9"/>
+
+  <circle cx="880" cy="430" r="85" stroke="#4BFFCF" stroke-opacity="0.9" stroke-width="22"/>
+  <circle cx="880" cy="430" r="40" fill="#0C1D34"/>
+
+  <text x="180" y="585" fill="#FFFFFF" fill-opacity="0.78" font-family="Arial, sans-serif" font-size="34" font-weight="700">
+    Обложка кейса
+  </text>
+</svg>

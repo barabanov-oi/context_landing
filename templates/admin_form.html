@@ -12,7 +12,7 @@
 
 {% block content %}
 <h1 class="h3 mb-3">{% if case %}Редактирование кейса{% else %}Новый кейс{% endif %}</h1>
-<form method="post" id="case-form">
+<form method="post" enctype="multipart/form-data" id="case-form">
   <div class="row g-4">
     <div class="col-lg-5">
       <div class="card-glass p-4 h-100">
@@ -37,6 +37,14 @@
           <div class="col-12">
             <label class="form-label">Тизер</label>
             <textarea class="form-control" rows="3" maxlength="220" name="teaser">{{ case.teaser if case else '' }}</textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Обложка кейса</label>
+            <input class="form-control" type="file" name="cover_image" accept=".png,.jpg,.jpeg,.webp,.gif">
+            <small class="text-muted-1">Если не загрузить изображение, в ленте будет показана стандартная заглушка.</small>
+            {% if case and case.cover_image %}
+              <img class="img-fluid rounded mt-2 border border-light-subtle" style="max-height: 140px; object-fit: cover;" src="{{ url_for('static', filename=case.cover_image) }}" alt="Текущая обложка кейса">
+            {% endif %}
           </div>
           <div class="col-12">
             <label class="form-label">Метрика 1</label>

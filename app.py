@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import uuid
 from functools import wraps
 from pathlib import Path
 from typing import Any
@@ -17,6 +18,7 @@ from flask import (
     url_for,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "context-landing-secret")
@@ -25,6 +27,8 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 DATA_FILE = Path("data/cases.json")
 USERS_FILE = Path("data/users.json")
 YANDEX_DIRECT_API_URL = "https://api.direct.yandex.com/json/v5/customers"
+UPLOADS_DIR = Path("static/uploads/covers")
+ALLOWED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 
 
 def slugify(text: str) -> str:
@@ -43,6 +47,7 @@ def load_cases() -> list[dict[str, Any]]:
 
     for case in cases:
         case.setdefault("custom_content", "")
+        case.setdefault("cover_image", "")
     return cases
 
 
@@ -99,6 +104,22 @@ def make_unique_slug(title: str, old_slug: str | None = None) -> str:
 
 def parse_tags(tags: str) -> list[str]:
     return [part.strip() for part in tags.split(",") if part.strip()]
+
+
+def save_cover_file(file_storage) -> str | None:
+    filename = secure_filename(file_storage.filename or "")
+    if not filename:
+        return None
+
+    extension = Path(filename).suffix.lower()
+    if extension not in ALLOWED_IMAGE_EXTENSIONS:
+        return None
+
+    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    unique_name = f"{uuid.uuid4().hex}{extension}"
+    file_path = UPLOADS_DIR / unique_name
+    file_storage.save(file_path)
+    return f"uploads/covers/{unique_name}"
 
 
 def admin_required(handler):
@@ -363,12 +384,22 @@ def admin_new_case() -> str:
             return render_template("admin_form.html", case=None)
 
         cases = load_cases()
+        cover_image = ""
+        uploaded_cover = request.files.get("cover_image")
+        if uploaded_cover and uploaded_cover.filename:
+            saved_cover = save_cover_file(uploaded_cover)
+            if saved_cover is None:
+                flash("Поддерживаются только изображения: PNG, JPG, JPEG, WEBP, GIF.", "danger")
+                return render_template("admin_form.html", case=None)
+            cover_image = saved_cover
+
         case_data = {
             "slug": make_unique_slug(title),
             "title": title,
             "subtitle": request.form.get("subtitle", "").strip(),
             "duration": request.form.get("duration", "").strip(),
             "teaser": request.form.get("teaser", "").strip(),
+            "cover_image": cover_image,
             "metric_1": request.form.get("metric_1", "").strip(),
             "metric_2": request.form.get("metric_2", "").strip(),
             "metric_3": request.form.get("metric_3", "").strip(),
@@ -402,6 +433,20 @@ def admin_edit_case(slug: str) -> str:
             flash("Укажите заголовок кейса.", "danger")
             return render_template("admin_form.html", case=case)
 
+        uploaded_cover = request.files.get("cover_image")
+        new_cover_image = case.get("cover_image", "")
+        if uploaded_cover and uploaded_cover.filename:
+            saved_cover = save_cover_file(uploaded_cover)
+            if saved_cover is None:
+                flash("Поддерживаются только изображения: PNG, JPG, JPEG, WEBP, GIF.", "danger")
+                return render_template("admin_form.html", case=case)
+
+            old_cover = case.get("cover_image", "")
+            old_cover_path = Path("static") / old_cover if old_cover else None
+            if old_cover_path and old_cover_path.exists() and old_cover_path.is_file():
+                old_cover_path.unlink()
+            new_cover_image = saved_cover
+
         case.update(
             {
                 "slug": make_unique_slug(title, old_slug=case["slug"]),
@@ -409,6 +454,7 @@ def admin_edit_case(slug: str) -> str:
                 "subtitle": request.form.get("subtitle", "").strip(),
                 "duration": request.form.get("duration", "").strip(),
                 "teaser": request.form.get("teaser", "").strip(),
+                "cover_image": new_cover_image,
                 "metric_1": request.form.get("metric_1", "").strip(),
                 "metric_2": request.form.get("metric_2", "").strip(),
                 "metric_3": request.form.get("metric_3", "").strip(),
