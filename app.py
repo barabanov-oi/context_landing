@@ -106,7 +106,7 @@ def admin_required(handler):
     def wrapped(*args, **kwargs):
         if not session.get("is_admin"):
             flash("Войдите в админку.", "warning")
-            return redirect(url_for("admin_login", next=request.path))
+            return redirect(url_for("admin", next=request.path))
         return handler(*args, **kwargs)
 
     return wrapped
@@ -324,8 +324,11 @@ def case_detail(slug: str) -> str:
     return render_template("case_detail.html", case=case)
 
 
-@app.route("/admin/login", methods=["GET", "POST"])
-def admin_login() -> str:
+@app.route("/admin", methods=["GET", "POST"])
+def admin() -> str:
+    if session.get("is_admin"):
+        return redirect(url_for("admin_list"))
+
     if request.method == "POST":
         password = request.form.get("password", "")
         if password == ADMIN_PASSWORD:
@@ -344,7 +347,7 @@ def admin_logout() -> str:
     return redirect(url_for("index"))
 
 
-@app.route("/admin")
+@app.route("/admin/cases")
 @admin_required
 def admin_list() -> str:
     return render_template("admin_list.html", cases=load_cases())
