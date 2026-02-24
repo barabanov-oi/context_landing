@@ -50,13 +50,16 @@ def load_cases() -> list[dict[str, Any]]:
         case.setdefault("cover_image", "")
         case.setdefault("metric_1_label", "")
         case.setdefault("metric_2_label", "")
-        case.setdefault("metric_3_label", "")
+        case.setdefault("metric_1_before", "")
+        case.setdefault("metric_1_after", case.get("metric_1", ""))
+        case.setdefault("metric_1_dynamic", "")
+        case.setdefault("metric_2_before", "")
+        case.setdefault("metric_2_after", case.get("metric_2", ""))
+        case.setdefault("metric_2_dynamic", "")
         case.setdefault("metric_1_trend", "up")
         case.setdefault("metric_2_trend", "up")
-        case.setdefault("metric_3_trend", "up")
         case.setdefault("metric_1_color", "green")
         case.setdefault("metric_2_color", "green")
-        case.setdefault("metric_3_color", "green")
     return cases
 
 
@@ -410,17 +413,17 @@ def admin_new_case() -> str:
             "teaser": request.form.get("teaser", "").strip(),
             "cover_image": cover_image,
             "metric_1_label": request.form.get("metric_1_label", "").strip(),
-            "metric_1": request.form.get("metric_1", "").strip(),
+            "metric_1_before": request.form.get("metric_1_before", "").strip(),
+            "metric_1_after": request.form.get("metric_1_after", "").strip(),
+            "metric_1_dynamic": request.form.get("metric_1_dynamic", "").strip(),
             "metric_1_trend": request.form.get("metric_1_trend", "up").strip() or "up",
             "metric_1_color": request.form.get("metric_1_color", "green").strip() or "green",
             "metric_2_label": request.form.get("metric_2_label", "").strip(),
-            "metric_2": request.form.get("metric_2", "").strip(),
+            "metric_2_before": request.form.get("metric_2_before", "").strip(),
+            "metric_2_after": request.form.get("metric_2_after", "").strip(),
+            "metric_2_dynamic": request.form.get("metric_2_dynamic", "").strip(),
             "metric_2_trend": request.form.get("metric_2_trend", "up").strip() or "up",
             "metric_2_color": request.form.get("metric_2_color", "green").strip() or "green",
-            "metric_3_label": request.form.get("metric_3_label", "").strip(),
-            "metric_3": request.form.get("metric_3", "").strip(),
-            "metric_3_trend": request.form.get("metric_3_trend", "up").strip() or "up",
-            "metric_3_color": request.form.get("metric_3_color", "green").strip() or "green",
             "task": request.form.get("task", "").strip(),
             "hypothesis": request.form.get("hypothesis", "").strip(),
             "actions": request.form.get("actions", "").strip(),
@@ -474,17 +477,17 @@ def admin_edit_case(slug: str) -> str:
                 "teaser": request.form.get("teaser", "").strip(),
                 "cover_image": new_cover_image,
                 "metric_1_label": request.form.get("metric_1_label", "").strip(),
-                "metric_1": request.form.get("metric_1", "").strip(),
+                "metric_1_before": request.form.get("metric_1_before", "").strip(),
+                "metric_1_after": request.form.get("metric_1_after", "").strip(),
+                "metric_1_dynamic": request.form.get("metric_1_dynamic", "").strip(),
                 "metric_1_trend": request.form.get("metric_1_trend", "up").strip() or "up",
                 "metric_1_color": request.form.get("metric_1_color", "green").strip() or "green",
                 "metric_2_label": request.form.get("metric_2_label", "").strip(),
-                "metric_2": request.form.get("metric_2", "").strip(),
+                "metric_2_before": request.form.get("metric_2_before", "").strip(),
+                "metric_2_after": request.form.get("metric_2_after", "").strip(),
+                "metric_2_dynamic": request.form.get("metric_2_dynamic", "").strip(),
                 "metric_2_trend": request.form.get("metric_2_trend", "up").strip() or "up",
                 "metric_2_color": request.form.get("metric_2_color", "green").strip() or "green",
-                "metric_3_label": request.form.get("metric_3_label", "").strip(),
-                "metric_3": request.form.get("metric_3", "").strip(),
-                "metric_3_trend": request.form.get("metric_3_trend", "up").strip() or "up",
-                "metric_3_color": request.form.get("metric_3_color", "green").strip() or "green",
                 "task": request.form.get("task", "").strip(),
                 "hypothesis": request.form.get("hypothesis", "").strip(),
                 "actions": request.form.get("actions", "").strip(),

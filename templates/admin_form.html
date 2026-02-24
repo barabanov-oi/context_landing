@@ -55,8 +55,16 @@
                   <input class="form-control" name="metric_1_label" maxlength="35" value="{{ case.metric_1_label if case else '' }}" placeholder="Например, CPL">
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Значение 1</label>
-                  <input class="form-control" name="metric_1" maxlength="35" value="{{ case.metric_1 if case else '' }}">
+                  <label class="form-label">Было 1</label>
+                  <input class="form-control" name="metric_1_before" maxlength="35" value="{{ case.metric_1_before if case else '' }}">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Стало 1</label>
+                  <input class="form-control" name="metric_1_after" maxlength="35" value="{{ case.metric_1_after if case else '' }}">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Динамика 1 (отдельной строкой)</label>
+                  <input class="form-control" name="metric_1_dynamic" maxlength="60" value="{{ case.metric_1_dynamic if case else '' }}" placeholder="×3,1 за 6 недель">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Стрелка 1</label>
@@ -84,8 +92,16 @@
                   <input class="form-control" name="metric_2_label" maxlength="35" value="{{ case.metric_2_label if case else '' }}" placeholder="Например, Конверсия">
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Значение 2</label>
-                  <input class="form-control" name="metric_2" maxlength="35" value="{{ case.metric_2 if case else '' }}">
+                  <label class="form-label">Было 2</label>
+                  <input class="form-control" name="metric_2_before" maxlength="35" value="{{ case.metric_2_before if case else '' }}">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Стало 2</label>
+                  <input class="form-control" name="metric_2_after" maxlength="35" value="{{ case.metric_2_after if case else '' }}">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Динамика 2 (отдельной строкой)</label>
+                  <input class="form-control" name="metric_2_dynamic" maxlength="60" value="{{ case.metric_2_dynamic if case else '' }}" placeholder="×2,4 за 4 недели">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Стрелка 2</label>
@@ -105,34 +121,6 @@
             </div>
           </div>
 
-          <div class="col-12">
-            <div class="metric-config-box">
-              <div class="row g-2">
-                <div class="col-md-8">
-                  <label class="form-label">Название показателя 3</label>
-                  <input class="form-control" name="metric_3_label" maxlength="35" value="{{ case.metric_3_label if case else '' }}" placeholder="Например, Лиды">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Значение 3</label>
-                  <input class="form-control" name="metric_3" maxlength="35" value="{{ case.metric_3 if case else '' }}">
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Стрелка 3</label>
-                  <select class="form-select" name="metric_3_trend">
-                    <option value="up" {% if not case or case.metric_3_trend == 'up' %}selected{% endif %}>Вверх ↑</option>
-                    <option value="down" {% if case and case.metric_3_trend == 'down' %}selected{% endif %}>Вниз ↓</option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Цвет стрелки 3</label>
-                  <select class="form-select" name="metric_3_color">
-                    <option value="green" {% if not case or case.metric_3_color == 'green' %}selected{% endif %}>Зелёный</option>
-                    <option value="red" {% if case and case.metric_3_color == 'red' %}selected{% endif %}>Красный</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@
   }
   .case-cover {
     width: 100%;
-    height: 220px;
+    height: 280px;
     object-fit: cover;
     display: block;
   }
@@ -27,7 +27,7 @@
     right: .75rem;
     bottom: .75rem;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: .35rem;
   }
   .cover-metric-item {
@@ -36,40 +36,41 @@
     backdrop-filter: blur(3px);
     border-radius: 10px;
     padding: .52rem .62rem;
-    min-height: 62px;
+    min-height: 84px;
     display: flex;
     align-items: center;
   }
   .cover-metric-line {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: .5rem;
-    font-size: .98rem;
-    line-height: 1;
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.08rem;
+    line-height: 1.2;
   }
   .cover-metric-label {
-    color: rgba(255,255,255,.94);
+    color: rgba(255,255,255,.9);
     font-weight: 600;
-    text-align: left;
+    font-size: .82rem;
+    margin-bottom: .2rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .cover-metric-value {
-    color: #fff;
-    font-weight: 800;
-    text-align: right;
+  .cover-metric-dynamic {
+    margin-top: .2rem;
+    color: rgba(255,255,255,.92);
+    font-size: .8rem;
+    line-height: 1.2;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .arrow-green { color: #4dff8a; margin-right: .24rem; font-weight: 900; }
   .arrow-red { color: #ff8585; margin-right: .24rem; font-weight: 900; }
 
   @media (max-width: 767px) {
     .cover-metrics { grid-template-columns: 1fr; bottom: .55rem; }
-    .case-cover { height: 260px; }
-    .cover-metric-line { font-size: 1.35rem; }
+    .case-cover { height: 320px; }
+    .cover-metric-line { font-size: 1.2rem; }
   }
 </style>
 {% endblock %}
@@ -83,9 +84,8 @@
 <div class="row g-4">
   {% for case in cases %}
     {% set metrics = [
-      {'label': case.metric_1_label, 'value': case.metric_1, 'trend': case.metric_1_trend, 'color': case.metric_1_color},
-      {'label': case.metric_2_label, 'value': case.metric_2, 'trend': case.metric_2_trend, 'color': case.metric_2_color},
-      {'label': case.metric_3_label, 'value': case.metric_3, 'trend': case.metric_3_trend, 'color': case.metric_3_color}
+      {'label': case.metric_1_label, 'before': case.metric_1_before, 'after': case.metric_1_after, 'dynamic': case.metric_1_dynamic, 'trend': case.metric_1_trend, 'color': case.metric_1_color},
+      {'label': case.metric_2_label, 'before': case.metric_2_before, 'after': case.metric_2_after, 'dynamic': case.metric_2_dynamic, 'trend': case.metric_2_trend, 'color': case.metric_2_color}
     ] %}
     <div class="col-lg-6">
       <article class="card-glass p-4 h-100">
@@ -97,18 +97,21 @@
           >
           <div class="case-cover-darken"></div>
           <div class="cover-metrics">
-            {% for metric in metrics if metric.label and metric.value %}
+            {% for metric in metrics if metric.label and (metric.before or metric.after) %}
               <div class="cover-metric-item">
-                <div class="cover-metric-line">
-                  <span class="cover-metric-label">{{ metric.label }}</span>
-                  <span class="cover-metric-value">
-                    {% if metric.trend == 'down' %}
-                      <span class="{{ 'arrow-red' if metric.color == 'red' else 'arrow-green' }}">↓</span>
-                    {% else %}
-                      <span class="{{ 'arrow-red' if metric.color == 'red' else 'arrow-green' }}">↑</span>
-                    {% endif %}
-                    {{ metric.value }}
-                  </span>
+                <div>
+                  <div class="cover-metric-label">{{ metric.label }}</div>
+                  <div class="cover-metric-line">{% if metric.before and metric.after %}{{ metric.before }} → {{ metric.after }}{% elif metric.after %}{{ metric.after }}{% else %}{{ metric.before }}{% endif %}</div>
+                  {% if metric.dynamic %}
+                    <div class="cover-metric-dynamic">
+                      {% if metric.trend == 'down' %}
+                        <span class="{{ 'arrow-red' if metric.color == 'red' else 'arrow-green' }}">↓</span>
+                      {% else %}
+                        <span class="{{ 'arrow-red' if metric.color == 'red' else 'arrow-green' }}">↑</span>
+                      {% endif %}
+                      {{ metric.dynamic }}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
             {% endfor %}
