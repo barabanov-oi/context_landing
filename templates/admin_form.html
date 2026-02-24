@@ -8,6 +8,11 @@
   #editor { min-height: 220px; }
   .form-block-title { font-size: .95rem; letter-spacing: .02em; text-transform: uppercase; color: rgba(255,255,255,.75); }
   .metric-config-box { border: 1px solid rgba(255,255,255,.2); border-radius: 12px; padding: .85rem; background: rgba(255,255,255,.03); }
+  .project-stages-box { border: 1px solid rgba(255,255,255,.2); border-radius: 12px; padding: .85rem; background: rgba(255,255,255,.03); }
+  .project-stage-input-row { display: flex; gap: .5rem; margin-bottom: .5rem; }
+  .project-stages-preview { margin: .8rem 0 0; padding-left: 0; list-style: none; border-left: 2px solid rgba(73, 156, 255, .4); }
+  .project-stages-preview li { position: relative; padding: .35rem .25rem .85rem 1.15rem; border-bottom: 1px dashed rgba(255,255,255,.16); color: rgba(255,255,255,.9); }
+  .project-stages-preview li::before { content: ''; position: absolute; left: -9px; top: .62rem; width: 14px; height: 14px; border-radius: 999px; background: #0d6efd; box-shadow: 0 0 0 4px rgba(13,110,253,.22); }
 </style>
 {% endblock %}
 
@@ -47,6 +52,28 @@
               <img class="img-fluid rounded mt-2 border border-light-subtle" style="max-height: 140px; object-fit: cover;" src="{{ url_for('static', filename=case.cover_image) }}" alt="Текущая обложка кейса">
             {% endif %}
           </div>
+
+          <div class="col-12">
+            <div class="project-stages-box">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label mb-0">Этапы проекта</label>
+                <button class="btn btn-outline-light btn-sm" type="button" id="add-stage-btn">+ Добавить этап</button>
+              </div>
+              <div id="project-stages-list">
+                {% set stages = case.project_stages if case and case.project_stages else [''] %}
+                {% for stage in stages %}
+                  <div class="project-stage-input-row">
+                    <input class="form-control project-stage-input" name="project_stages[]" maxlength="140" value="{{ stage }}" placeholder="Например: Точная кластеризация запросов">
+                    {% if not loop.first %}
+                      <button class="btn btn-outline-danger" type="button" onclick="removeStageInput(this)">×</button>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+              <ul id="project-stages-preview" class="project-stages-preview"></ul>
+            </div>
+          </div>
+
           <div class="col-12">
             <div class="metric-config-box">
               <div class="row g-2">
@@ -138,10 +165,13 @@
       </div>
 
       <div class="card-glass p-4">
-        <p class="form-block-title mb-3">Кастомный HTML-контент</p>
+        <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+          <p class="form-block-title mb-0">Кастомный HTML-контент</p>
+          <button type="button" class="btn btn-outline-light btn-sm" id="insert-carousel-btn">+ Карусель изображений</button>
+        </div>
         <div id="editor">{{ case.custom_content|safe if case else '' }}</div>
         <input type="hidden" name="custom_content" id="custom_content_input">
-        <small class="text-muted-1">Этот блок выводится на странице кейса после основных разделов.</small>
+        <small class="text-muted-1">Этот блок выводится на странице кейса после основных разделов. Изображения и карусели можно добавлять прямо в редакторе.</small>
       </div>
     </div>
   </div>
@@ -161,18 +191,36 @@
     modules: {
       toolbar: {
         container: [
-        [{ header: [1, 2, 3, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ list: 'ordered'}, { list: 'bullet' }],
-        ['link', 'blockquote', 'code-block', 'image'],
-        ['clean']
-      ],
+          [{ header: [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ list: 'ordered'}, { list: 'bullet' }],
+          ['link', 'blockquote', 'code-block', 'image'],
+          ['clean']
+        ],
         handlers: {
           image: selectAndUploadImage
         }
       }
     }
   });
+
+  async function uploadImages(files) {
+    const uploaded = [];
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('image', file);
+      const response = await fetch('{{ url_for('admin_upload_editor_image') }}', {
+        method: 'POST',
+        body: formData
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.url) {
+        throw new Error(payload.error || 'Не удалось загрузить изображение.');
+      }
+      uploaded.push(payload.url);
+    }
+    return uploaded;
+  }
 
   async function selectAndUploadImage() {
     const input = document.createElement('input');
@@ -186,28 +234,96 @@
         return;
       }
 
-      const formData = new FormData();
-      formData.append('image', file);
-
       try {
-        const response = await fetch('{{ url_for('admin_upload_editor_image') }}', {
-          method: 'POST',
-          body: formData
-        });
-
-        const payload = await response.json();
-        if (!response.ok || !payload.url) {
-          throw new Error(payload.error || 'Не удалось загрузить изображение.');
-        }
-
+        const [url] = await uploadImages([file]);
         const range = quill.getSelection(true) || { index: quill.getLength() };
-        quill.insertEmbed(range.index, 'image', payload.url, 'user');
+        quill.insertEmbed(range.index, 'image', url, 'user');
         quill.setSelection(range.index + 1, 0);
       } catch (error) {
         alert(error.message || 'Ошибка загрузки изображения.');
       }
     };
   }
+
+  document.getElementById('insert-carousel-btn').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/png,image/jpeg,image/webp,image/gif');
+    input.setAttribute('multiple', 'multiple');
+    input.click();
+
+    input.onchange = async () => {
+      const files = Array.from(input.files || []);
+      if (!files.length) {
+        return;
+      }
+      try {
+        const urls = await uploadImages(files);
+        const galleryId = `gallery-${Date.now()}`;
+        const html = `<div class="custom-gallery" data-gallery="${galleryId}">${urls.map((url) => `<img src="${url}" alt="Слайд галереи">`).join('')}</div><p><br></p>`;
+        const range = quill.getSelection(true) || { index: quill.getLength() };
+        quill.clipboard.dangerouslyPasteHTML(range.index, html, 'user');
+        quill.setSelection(range.index + 1, 0);
+      } catch (error) {
+        alert(error.message || 'Ошибка загрузки карусели.');
+      }
+    };
+  });
+
+  const stagesList = document.getElementById('project-stages-list');
+  const stagesPreview = document.getElementById('project-stages-preview');
+
+  function renderStagesPreview() {
+    const values = Array.from(document.querySelectorAll('.project-stage-input'))
+      .map((input) => input.value.trim())
+      .filter(Boolean);
+
+    if (!values.length) {
+      stagesPreview.innerHTML = '<li>Добавьте этап проекта, чтобы увидеть предпросмотр.</li>';
+      return;
+    }
+
+    stagesPreview.innerHTML = values.map((value) => `<li><strong>${value}</strong></li>`).join('');
+  }
+
+  function bindStageInput(input) {
+    input.addEventListener('input', renderStagesPreview);
+  }
+
+  function createStageRow(value = '') {
+    const row = document.createElement('div');
+    row.className = 'project-stage-input-row';
+    row.innerHTML = `
+      <input class="form-control project-stage-input" name="project_stages[]" maxlength="140" value="${value}" placeholder="Например: Ретаргет и дожим аудитории">
+      <button class="btn btn-outline-danger" type="button">×</button>
+    `;
+    row.querySelector('button').addEventListener('click', () => {
+      row.remove();
+      if (!document.querySelector('.project-stage-input')) {
+        createStageRow();
+      }
+      renderStagesPreview();
+    });
+    stagesList.appendChild(row);
+    bindStageInput(row.querySelector('.project-stage-input'));
+    renderStagesPreview();
+  }
+
+  function removeStageInput(button) {
+    const row = button.closest('.project-stage-input-row');
+    if (row) {
+      row.remove();
+      if (!document.querySelector('.project-stage-input')) {
+        createStageRow();
+      }
+      renderStagesPreview();
+    }
+  }
+  window.removeStageInput = removeStageInput;
+
+  document.querySelectorAll('.project-stage-input').forEach(bindStageInput);
+  document.getElementById('add-stage-btn').addEventListener('click', () => createStageRow());
+  renderStagesPreview();
 
   document.getElementById('case-form').addEventListener('submit', function () {
     document.getElementById('custom_content_input').value = quill.root.innerHTML;

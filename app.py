@@ -62,6 +62,7 @@ def load_cases() -> list[dict[str, Any]]:
         case.setdefault("metric_2_trend", "up")
         case.setdefault("metric_1_color", "green")
         case.setdefault("metric_2_color", "green")
+        case.setdefault("project_stages", [])
     return cases
 
 
@@ -118,6 +119,10 @@ def make_unique_slug(title: str, old_slug: str | None = None) -> str:
 
 def parse_tags(tags: str) -> list[str]:
     return [part.strip() for part in tags.split(",") if part.strip()]
+
+
+def parse_project_stages(values: list[str]) -> list[str]:
+    return [value.strip() for value in values if value and value.strip()]
 
 
 def save_cover_file(file_storage) -> str | None:
@@ -467,6 +472,7 @@ def admin_new_case() -> str:
             "conclusion": request.form.get("conclusion", "").strip(),
             "custom_content": request.form.get("custom_content", "").strip(),
             "tags": parse_tags(request.form.get("tags", "")),
+            "project_stages": parse_project_stages(request.form.getlist("project_stages[]")),
         }
         cases.append(case_data)
         save_cases(cases)
@@ -531,6 +537,7 @@ def admin_edit_case(slug: str) -> str:
                 "conclusion": request.form.get("conclusion", "").strip(),
                 "custom_content": request.form.get("custom_content", "").strip(),
                 "tags": parse_tags(request.form.get("tags", "")),
+                "project_stages": parse_project_stages(request.form.getlist("project_stages[]")),
             }
         )
         save_cases(cases)

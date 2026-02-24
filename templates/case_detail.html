@@ -1,5 +1,25 @@
 {% extends 'base.html' %}
 {% block title %}{{ case.title }}{% endblock %}
+
+{% block head_extra %}
+<style>
+  .project-stages { margin: 1rem 0 1.5rem; list-style: none; padding-left: 0; border-left: 2px solid rgba(73, 156, 255, .35); }
+  .project-stages li { position: relative; padding: .4rem .2rem 1rem 1.2rem; border-bottom: 1px dashed rgba(255,255,255,.15); }
+  .project-stages li::before { content: ''; position: absolute; left: -9px; top: .62rem; width: 14px; height: 14px; border-radius: 999px; background: #0d6efd; box-shadow: 0 0 0 5px rgba(13,110,253,.2); }
+  .custom-content img { max-height: 300px; width: auto; max-width: 100%; border-radius: 8px; cursor: zoom-in; }
+  .custom-content .custom-gallery { display: flex; gap: .75rem; overflow-x: auto; padding-bottom: .4rem; }
+  .custom-content .custom-gallery img { flex: 0 0 auto; }
+  .image-lightbox { position: fixed; inset: 0; background: rgba(4,10,20,.92); display: none; align-items: center; justify-content: center; z-index: 9999; }
+  .image-lightbox.open { display: flex; }
+  .image-lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 10px; }
+  .lightbox-close, .lightbox-nav { position: absolute; background: rgba(255,255,255,.16); color: #fff; border: 0; border-radius: 10px; padding: .45rem .65rem; }
+  .lightbox-close { top: 1rem; right: 1rem; }
+  .lightbox-nav { top: 50%; transform: translateY(-50%); }
+  .lightbox-prev { left: 1rem; }
+  .lightbox-next { right: 1rem; }
+</style>
+{% endblock %}
+
 {% block content %}
 <article class="card-glass p-4 p-md-5">
   <h1 class="fw-bold mb-2">{{ case.title }}</h1>
@@ -17,6 +37,16 @@
   <p class="text-muted-1">{{ case.hypothesis }}</p>
   <h2 class="h5">Действия</h2>
   <p class="text-muted-1" style="white-space: pre-line;">{{ case.actions }}</p>
+
+  {% if case.project_stages %}
+    <h2 class="h5 mt-4">Этапы проекта</h2>
+    <ul class="project-stages">
+      {% for stage in case.project_stages %}
+        <li><strong>{{ stage }}</strong></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   <h2 class="h5">Результат</h2>
   <p class="text-muted-1">{{ case.result }}</p>
   <h2 class="h5">Выводы</h2>
@@ -24,11 +54,91 @@
 
   {% if case.custom_content %}
     <hr>
-    <section class="mt-4">
+    <section class="mt-4 custom-content" id="custom-content-block">
       {{ case.custom_content|safe }}
     </section>
   {% endif %}
 
   <a class="btn btn-outline-light mt-3" href="{{ url_for('index') }}">← Вернуться в ленту</a>
 </article>
+
+<div class="image-lightbox" id="image-lightbox">
+  <button class="lightbox-close" type="button" id="lightbox-close">✕</button>
+  <button class="lightbox-nav lightbox-prev" type="button" id="lightbox-prev">←</button>
+  <img id="lightbox-image" src="" alt="Увеличенное изображение">
+  <button class="lightbox-nav lightbox-next" type="button" id="lightbox-next">→</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const content = document.getElementById('custom-content-block');
+    if (!content) return;
+
+    const lightbox = document.getElementById('image-lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const btnPrev = document.getElementById('lightbox-prev');
+    const btnNext = document.getElementById('lightbox-next');
+    const btnClose = document.getElementById('lightbox-close');
+
+    let activeImages = [];
+    let activeIndex = 0;
+
+    function renderLightbox() {
+      lightboxImage.src = activeImages[activeIndex] || '';
+      const isSlider = activeImages.length > 1;
+      btnPrev.style.display = isSlider ? 'block' : 'none';
+      btnNext.style.display = isSlider ? 'block' : 'none';
+    }
+
+    function openLightbox(images, index) {
+      activeImages = images;
+      activeIndex = index;
+      renderLightbox();
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+      activeImages = [];
+      activeIndex = 0;
+    }
+
+    btnPrev.addEventListener('click', () => {
+      if (!activeImages.length) return;
+      activeIndex = (activeIndex - 1 + activeImages.length) % activeImages.length;
+      renderLightbox();
+    });
+
+    btnNext.addEventListener('click', () => {
+      if (!activeImages.length) return;
+      activeIndex = (activeIndex + 1) % activeImages.length;
+      renderLightbox();
+    });
+
+    btnClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    content.querySelectorAll('img').forEach((img) => {
+      img.addEventListener('click', () => {
+        const gallery = img.closest('.custom-gallery');
+        if (gallery) {
+          const images = Array.from(gallery.querySelectorAll('img')).map((item) => item.src);
+          const index = Array.from(gallery.querySelectorAll('img')).indexOf(img);
+          openLightbox(images, index);
+          return;
+        }
+
+        openLightbox([img.src], 0);
+      });
+    });
+  })();
+</script>
 {% endblock %}
