@@ -48,6 +48,9 @@ def load_cases() -> list[dict[str, Any]]:
     for case in cases:
         case.setdefault("custom_content", "")
         case.setdefault("cover_image", "")
+        case.setdefault("metric_1_label", "")
+        case.setdefault("metric_2_label", "")
+        case.setdefault("metric_3_label", "")
     return cases
 
 
@@ -400,8 +403,11 @@ def admin_new_case() -> str:
             "duration": request.form.get("duration", "").strip(),
             "teaser": request.form.get("teaser", "").strip(),
             "cover_image": cover_image,
+            "metric_1_label": request.form.get("metric_1_label", "").strip(),
             "metric_1": request.form.get("metric_1", "").strip(),
+            "metric_2_label": request.form.get("metric_2_label", "").strip(),
             "metric_2": request.form.get("metric_2", "").strip(),
+            "metric_3_label": request.form.get("metric_3_label", "").strip(),
             "metric_3": request.form.get("metric_3", "").strip(),
             "task": request.form.get("task", "").strip(),
             "hypothesis": request.form.get("hypothesis", "").strip(),
@@ -455,8 +461,11 @@ def admin_edit_case(slug: str) -> str:
                 "duration": request.form.get("duration", "").strip(),
                 "teaser": request.form.get("teaser", "").strip(),
                 "cover_image": new_cover_image,
+                "metric_1_label": request.form.get("metric_1_label", "").strip(),
                 "metric_1": request.form.get("metric_1", "").strip(),
+                "metric_2_label": request.form.get("metric_2_label", "").strip(),
                 "metric_2": request.form.get("metric_2", "").strip(),
+                "metric_3_label": request.form.get("metric_3_label", "").strip(),
                 "metric_3": request.form.get("metric_3", "").strip(),
                 "task": request.form.get("task", "").strip(),
                 "hypothesis": request.form.get("hypothesis", "").strip(),

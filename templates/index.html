@@ -49,15 +49,19 @@
         </div>
         <p class="text-muted-1">{{ case.teaser }}</p>
 
-        {% set metrics = [case.metric_1, case.metric_2, case.metric_3] %}
+        {% set metrics = [
+          {'label': case.metric_1_label, 'value': case.metric_1, 'icon': '🍩'},
+          {'label': case.metric_2_label, 'value': case.metric_2, 'icon': '📊'},
+          {'label': case.metric_3_label, 'value': case.metric_3, 'icon': '📈'}
+        ] %}
         <div class="metrics-grid mb-3">
-          {% for metric in metrics if metric %}
+          {% for metric in metrics if metric.value %}
             <div class="metric-vivid alt-{{ loop.index }}">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="metric-icon">{{ ['🍩', '📊', '📈'][loop.index0] }}</span>
-                <small class="text-white-50">Показатель {{ loop.index }}</small>
+                <span class="metric-icon">{{ metric.icon }}</span>
+                <small class="text-white-50">{{ metric.label if metric.label else 'Показатель ' ~ loop.index }}</small>
               </div>
-              <div class="fw-semibold small mb-2">{{ metric }}</div>
+              <div class="fw-semibold small mb-2">{{ metric.value }}</div>
               <div class="metric-bar"><span style="width: {{ 58 + loop.index * 12 }}%"></span></div>
             </div>
           {% endfor %}
