@@ -209,7 +209,7 @@
     for (const file of files) {
       const formData = new FormData();
       formData.append('image', file);
-      const response = await fetch('{{ url_for('admin_upload_editor_image') }}', {
+      const response = await fetch('/admin/editor/upload-image', {
         method: 'POST',
         body: formData
       });
