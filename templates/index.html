@@ -67,6 +67,43 @@
   .arrow-green { color: #4dff8a; margin-right: .24rem; font-weight: 900; }
   .arrow-red { color: #ff8585; margin-right: .24rem; font-weight: 900; }
 
+  .case-stages-title {
+    font-size: .78rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.6);
+    margin-bottom: .35rem;
+  }
+  .case-stages-preview {
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 .9rem;
+    border-left: 2px solid rgba(73, 156, 255, .35);
+  }
+  .case-stages-preview li {
+    position: relative;
+    padding: .2rem .25rem .5rem 1rem;
+    color: rgba(255,255,255,.88);
+    border-bottom: 1px dashed rgba(255,255,255,.14);
+    font-size: .92rem;
+    line-height: 1.35;
+  }
+  .case-stages-preview li:last-child {
+    border-bottom: 0;
+    padding-bottom: .2rem;
+  }
+  .case-stages-preview li::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: .55rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13,110,253,.2);
+  }
+
   @media (max-width: 767px) {
     .cover-metrics { grid-template-columns: 1fr; bottom: .55rem; }
     .case-cover { height: 320px; }
@@ -78,7 +115,7 @@
 {% block content %}
 <section class="mb-4">
   <h1 class="display-6 fw-bold">Кейсы по юридической лидогенерации</h1>
-  <p class="text-muted-1">Карточки в ленте показывают обложку и наглядные показатели кейса.</p>
+  <p class="text-muted-1">Карточки в ленте показывают обложку, показатели и этапы проекта.</p>
 </section>
 
 <div class="row g-4">
@@ -124,6 +161,15 @@
           {% for tag in case.tags %}<span class="pill">{{ tag }}</span>{% endfor %}
         </div>
         <p class="text-muted-1">{{ case.teaser }}</p>
+
+        {% if case.project_stages %}
+          <p class="case-stages-title">Этапы проекта</p>
+          <ul class="case-stages-preview">
+            {% for stage in case.project_stages[:3] %}
+              <li>{{ stage }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
 
         <a class="btn btn-outline-light" href="{{ url_for('case_detail', slug=case.slug) }}">Читать кейс</a>
       </article>
