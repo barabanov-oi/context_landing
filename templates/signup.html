@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Быстрая регистрация{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card-glass p-4">
+      <h1 class="h4 mb-2">Быстрая регистрация</h1>
+      <p class="text-muted-1">Создайте аккаунт по email и паролю, чтобы подключить Яндекс Директ в личном кабинете.</p>
+      <form method="post">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control mb-3" required>
+
+        <label class="form-label">Пароль</label>
+        <input type="password" name="password" minlength="6" class="form-control mb-3" required>
+
+        <button class="btn btn-primary w-100" type="submit">Зарегистрироваться</button>
+      </form>
+      <p class="small mt-3 mb-0">Уже есть аккаунт? <a href="{{ url_for('login') }}">Войдите</a>.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -5,6 +5,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
+import requests
 from flask import (
     Flask,
     abort,
@@ -15,12 +16,15 @@ from flask import (
     session,
     url_for,
 )
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "context-landing-secret")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 
 DATA_FILE = Path("data/cases.json")
+USERS_FILE = Path("data/users.json")
+YANDEX_DIRECT_API_URL = "https://api.direct.yandex.com/json/v5/customers"
 
 
 def slugify(text: str) -> str:
@@ -45,6 +49,31 @@ def load_cases() -> list[dict[str, Any]]:
 def save_cases(cases: list[dict[str, Any]]) -> None:
     with DATA_FILE.open("w", encoding="utf-8") as file:
         json.dump(cases, file, ensure_ascii=False, indent=2)
+
+
+def load_users() -> list[dict[str, Any]]:
+    if not USERS_FILE.exists():
+        return []
+    with USERS_FILE.open("r", encoding="utf-8") as file:
+        users = json.load(file)
+
+    for user in users:
+        user.setdefault("direct_accounts", [])
+    return users
+
+
+def save_users(users: list[dict[str, Any]]) -> None:
+    USERS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with USERS_FILE.open("w", encoding="utf-8") as file:
+        json.dump(users, file, ensure_ascii=False, indent=2)
+
+
+def find_user(email: str) -> dict[str, Any] | None:
+    email_normalized = email.strip().lower()
+    for user in load_users():
+        if user["email"] == email_normalized:
+            return user
+    return None
 
 
 def find_case(slug: str) -> dict[str, Any] | None:
@@ -83,9 +112,208 @@ def admin_required(handler):
     return wrapped
 
 
+def auth_required(handler):
+    @wraps(handler)
+    def wrapped(*args, **kwargs):
+        if not session.get("user_email"):
+            flash("Сначала войдите в аккаунт.", "warning")
+            return redirect(url_for("login", next=request.path))
+        return handler(*args, **kwargs)
+
+    return wrapped
+
+
+def validate_direct_connection(token: str, login: str) -> tuple[bool, str]:
+    payload = {
+        "method": "get",
+        "params": {
+            "SelectionCriteria": {"Logins": [login]},
+            "FieldNames": ["Login", "Name", "CountryId", "Currency"],
+        },
+    }
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept-Language": "ru",
+        "Content-Type": "application/json; charset=utf-8",
+    }
+
+    response = requests.post(
+        YANDEX_DIRECT_API_URL,
+        json=payload,
+        headers=headers,
+        timeout=15,
+    )
+
+    if response.status_code >= 400:
+        return False, f"HTTP {response.status_code}: {response.text[:200]}"
+
+    data = response.json()
+    if "error" in data:
+        error = data["error"]
+        detail = error.get("error_detail") or error.get("error_string") or "Неизвестная ошибка API"
+        return False, detail
+
+    result = data.get("result", {})
+    customers = result.get("Customers", [])
+    if not customers:
+        return False, "API не вернуло клиентов по указанному логину."
+
+    customer = customers[0]
+    name = customer.get("Name") or customer.get("Login")
+    return True, name
+
+
 @app.route("/")
 def index() -> str:
     return render_template("index.html", cases=load_cases())
+
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup() -> str:
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        if not email or "@" not in email:
+            flash("Укажите корректный email.", "danger")
+            return render_template("signup.html")
+        if len(password) < 6:
+            flash("Пароль должен содержать минимум 6 символов.", "danger")
+            return render_template("signup.html")
+        if find_user(email):
+            flash("Пользователь с таким email уже зарегистрирован.", "danger")
+            return render_template("signup.html")
+
+        users = load_users()
+        users.append(
+            {
+                "email": email,
+                "password_hash": generate_password_hash(password),
+                "direct_accounts": [],
+            }
+        )
+        save_users(users)
+        session["user_email"] = email
+        flash("Регистрация прошла успешно. Добро пожаловать!", "success")
+        return redirect(url_for("cabinet"))
+
+    return render_template("signup.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login() -> str:
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        user = find_user(email)
+        if user is None or not check_password_hash(user["password_hash"], password):
+            flash("Неверный email или пароль.", "danger")
+            return render_template("login.html")
+
+        session["user_email"] = user["email"]
+        flash("Вы успешно вошли в аккаунт.", "success")
+        target = request.args.get("next") or url_for("cabinet")
+        return redirect(target)
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout() -> str:
+    session.pop("user_email", None)
+    flash("Вы вышли из личного кабинета.", "info")
+    return redirect(url_for("index"))
+
+
+@app.route("/cabinet")
+@auth_required
+def cabinet() -> str:
+    user = find_user(session["user_email"])
+    if user is None:
+        session.pop("user_email", None)
+        flash("Пользователь не найден. Войдите снова.", "warning")
+        return redirect(url_for("login"))
+    return render_template("cabinet.html", user=user)
+
+
+@app.route("/cabinet/direct/connect", methods=["POST"])
+@auth_required
+def connect_direct() -> str:
+    token = request.form.get("access_token", "").strip()
+    direct_login = request.form.get("direct_login", "").strip()
+
+    if not token or not direct_login:
+        flash("Укажите OAuth-токен и логин аккаунта Директа.", "danger")
+        return redirect(url_for("cabinet"))
+
+    users = load_users()
+    user_index = next(
+        (idx for idx, item in enumerate(users) if item["email"] == session["user_email"]),
+        None,
+    )
+    if user_index is None:
+        flash("Пользователь не найден.", "danger")
+        return redirect(url_for("login"))
+
+    user = users[user_index]
+    already_connected = next(
+        (acc for acc in user.get("direct_accounts", []) if acc["direct_login"] == direct_login),
+        None,
+    )
+    if already_connected is not None:
+        flash("Этот аккаунт Яндекс Директ уже подключён.", "warning")
+        return redirect(url_for("cabinet"))
+
+    try:
+        is_valid, name_or_error = validate_direct_connection(token, direct_login)
+    except requests.RequestException as error:
+        flash(f"Ошибка подключения к API Яндекс Директ: {error}", "danger")
+        return redirect(url_for("cabinet"))
+
+    if not is_valid:
+        flash(f"Не удалось подключить аккаунт: {name_or_error}", "danger")
+        return redirect(url_for("cabinet"))
+
+    user.setdefault("direct_accounts", []).append(
+        {
+            "direct_login": direct_login,
+            "display_name": name_or_error,
+            "access_token": token,
+        }
+    )
+    save_users(users)
+    flash(f"Аккаунт {direct_login} успешно подключён к кабинету.", "success")
+    return redirect(url_for("cabinet"))
+
+
+@app.route("/cabinet/direct/<direct_login>/disconnect", methods=["POST"])
+@auth_required
+def disconnect_direct(direct_login: str) -> str:
+    users = load_users()
+    user_index = next(
+        (idx for idx, item in enumerate(users) if item["email"] == session["user_email"]),
+        None,
+    )
+    if user_index is None:
+        flash("Пользователь не найден.", "danger")
+        return redirect(url_for("login"))
+
+    user = users[user_index]
+    before = len(user.get("direct_accounts", []))
+    user["direct_accounts"] = [
+        account
+        for account in user.get("direct_accounts", [])
+        if account["direct_login"] != direct_login
+    ]
+
+    if len(user["direct_accounts"]) == before:
+        flash("Аккаунт не найден среди подключённых.", "warning")
+    else:
+        save_users(users)
+        flash(f"Аккаунт {direct_login} отключён.", "info")
+
+    return redirect(url_for("cabinet"))
 
 
 @app.route("/cases/<slug>")

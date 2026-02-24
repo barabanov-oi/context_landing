@@ -17,9 +17,16 @@
 <body>
 <nav class="navbar navbar-dark border-bottom border-secondary-subtle mb-4">
   <div class="container">
-    <a class="navbar-brand" href="{{ url_for('index') }}">Портфолио • Яндекс Директ</a>
+    <a class="navbar-brand" href="{{ url_for('index') }}">SaaS • Яндекс Директ</a>
     <div class="d-flex gap-2">
       <a class="btn btn-outline-light btn-sm" href="{{ url_for('index') }}">Лента кейсов</a>
+      {% if session.get('user_email') %}
+        <a class="btn btn-success btn-sm" href="{{ url_for('cabinet') }}">Личный кабинет</a>
+        <a class="btn btn-outline-warning btn-sm" href="{{ url_for('logout') }}">Выйти</a>
+      {% else %}
+        <a class="btn btn-success btn-sm" href="{{ url_for('signup') }}">Регистрация</a>
+        <a class="btn btn-outline-light btn-sm" href="{{ url_for('login') }}">Войти</a>
+      {% endif %}
       {% if session.get('is_admin') %}
         <a class="btn btn-primary btn-sm" href="{{ url_for('admin_list') }}">Админка</a>
         <a class="btn btn-outline-warning btn-sm" href="{{ url_for('admin_logout') }}">Выйти</a>
