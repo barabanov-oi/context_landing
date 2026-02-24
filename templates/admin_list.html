@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Админка{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Админка кейсов</h1>
+  <a class="btn btn-success" href="{{ url_for('admin_new_case') }}">+ Добавить кейс</a>
+</div>
+
+<div class="card-glass p-3">
+  <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Заголовок</th>
+          <th>Ссылка</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for case in cases %}
+        <tr>
+          <td>{{ case.title }}</td>
+          <td><a href="{{ url_for('case_detail', slug=case.slug) }}" target="_blank">/cases/{{ case.slug }}</a></td>
+          <td><a class="btn btn-sm btn-outline-light" href="{{ url_for('admin_edit_case', slug=case.slug) }}">Редактировать</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

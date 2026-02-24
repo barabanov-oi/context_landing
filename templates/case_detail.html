@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}{{ case.title }}{% endblock %}
+{% block content %}
+<article class="card-glass p-4 p-md-5">
+  <h1 class="fw-bold mb-2">{{ case.title }}</h1>
+  <p class="text-muted-1 mb-4">{{ case.subtitle }} {% if case.duration %}• {{ case.duration }}{% endif %}</p>
+
+  <div class="mb-3">
+    {% for tag in case.tags %}<span class="pill">{{ tag }}</span>{% endfor %}
+  </div>
+
+  <p class="lead">{{ case.teaser }}</p>
+  <hr>
+  <h2 class="h5">Задача</h2>
+  <p class="text-muted-1">{{ case.task }}</p>
+  <h2 class="h5">Гипотеза</h2>
+  <p class="text-muted-1">{{ case.hypothesis }}</p>
+  <h2 class="h5">Действия</h2>
+  <p class="text-muted-1" style="white-space: pre-line;">{{ case.actions }}</p>
+  <h2 class="h5">Результат</h2>
+  <p class="text-muted-1">{{ case.result }}</p>
+  <h2 class="h5">Выводы</h2>
+  <p class="text-muted-1">{{ case.conclusion }}</p>
+
+  <a class="btn btn-outline-light mt-3" href="{{ url_for('index') }}">← Вернуться в ленту</a>
+</article>
+{% endblock %}

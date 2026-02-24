@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{% if case %}Редактирование{% else %}Новый кейс{% endif %}{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">{% if case %}Редактирование кейса{% else %}Новый кейс{% endif %}</h1>
+<form method="post" class="card-glass p-4">
+  <div class="row g-3">
+    <div class="col-md-8">
+      <label class="form-label">Заголовок</label>
+      <input class="form-control" name="title" value="{{ case.title if case else '' }}" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Срок</label>
+      <input class="form-control" name="duration" value="{{ case.duration if case else '' }}">
+    </div>
+    <div class="col-12">
+      <label class="form-label">Подзаголовок</label>
+      <input class="form-control" name="subtitle" value="{{ case.subtitle if case else '' }}">
+    </div>
+    <div class="col-12">
+      <label class="form-label">Теги (через запятую)</label>
+      <input class="form-control" name="tags" value="{{ case.tags|join(', ') if case else '' }}">
+    </div>
+    <div class="col-12">
+      <label class="form-label">Тизер</label>
+      <textarea class="form-control" rows="2" name="teaser">{{ case.teaser if case else '' }}</textarea>
+    </div>
+    <div class="col-md-4"><label class="form-label">Метрика 1</label><input class="form-control" name="metric_1" value="{{ case.metric_1 if case else '' }}"></div>
+    <div class="col-md-4"><label class="form-label">Метрика 2</label><input class="form-control" name="metric_2" value="{{ case.metric_2 if case else '' }}"></div>
+    <div class="col-md-4"><label class="form-label">Метрика 3</label><input class="form-control" name="metric_3" value="{{ case.metric_3 if case else '' }}"></div>
+    <div class="col-12"><label class="form-label">Задача</label><textarea class="form-control" rows="2" name="task">{{ case.task if case else '' }}</textarea></div>
+    <div class="col-12"><label class="form-label">Гипотеза</label><textarea class="form-control" rows="2" name="hypothesis">{{ case.hypothesis if case else '' }}</textarea></div>
+    <div class="col-12"><label class="form-label">Действия</label><textarea class="form-control" rows="4" name="actions">{{ case.actions if case else '' }}</textarea></div>
+    <div class="col-12"><label class="form-label">Результат</label><textarea class="form-control" rows="2" name="result">{{ case.result if case else '' }}</textarea></div>
+    <div class="col-12"><label class="form-label">Выводы</label><textarea class="form-control" rows="2" name="conclusion">{{ case.conclusion if case else '' }}</textarea></div>
+  </div>
+  <div class="mt-3 d-flex gap-2">
+    <button class="btn btn-primary" type="submit">Сохранить</button>
+    <a class="btn btn-outline-light" href="{{ url_for('admin_list') }}">Отмена</a>
+  </div>
+</form>
+{% endblock %}
