@@ -51,6 +51,9 @@ def load_cases() -> list[dict[str, Any]]:
         case.setdefault("metric_1_label", "")
         case.setdefault("metric_2_label", "")
         case.setdefault("metric_3_label", "")
+        case.setdefault("metric_1_trend", "up")
+        case.setdefault("metric_2_trend", "up")
+        case.setdefault("metric_3_trend", "up")
     return cases
 
 
@@ -405,10 +408,13 @@ def admin_new_case() -> str:
             "cover_image": cover_image,
             "metric_1_label": request.form.get("metric_1_label", "").strip(),
             "metric_1": request.form.get("metric_1", "").strip(),
+            "metric_1_trend": request.form.get("metric_1_trend", "up").strip() or "up",
             "metric_2_label": request.form.get("metric_2_label", "").strip(),
             "metric_2": request.form.get("metric_2", "").strip(),
+            "metric_2_trend": request.form.get("metric_2_trend", "up").strip() or "up",
             "metric_3_label": request.form.get("metric_3_label", "").strip(),
             "metric_3": request.form.get("metric_3", "").strip(),
+            "metric_3_trend": request.form.get("metric_3_trend", "up").strip() or "up",
             "task": request.form.get("task", "").strip(),
             "hypothesis": request.form.get("hypothesis", "").strip(),
             "actions": request.form.get("actions", "").strip(),
@@ -463,10 +469,13 @@ def admin_edit_case(slug: str) -> str:
                 "cover_image": new_cover_image,
                 "metric_1_label": request.form.get("metric_1_label", "").strip(),
                 "metric_1": request.form.get("metric_1", "").strip(),
+                "metric_1_trend": request.form.get("metric_1_trend", "up").strip() or "up",
                 "metric_2_label": request.form.get("metric_2_label", "").strip(),
                 "metric_2": request.form.get("metric_2", "").strip(),
+                "metric_2_trend": request.form.get("metric_2_trend", "up").strip() or "up",
                 "metric_3_label": request.form.get("metric_3_label", "").strip(),
                 "metric_3": request.form.get("metric_3", "").strip(),
+                "metric_3_trend": request.form.get("metric_3_trend", "up").strip() or "up",
                 "task": request.form.get("task", "").strip(),
                 "hypothesis": request.form.get("hypothesis", "").strip(),
                 "actions": request.form.get("actions", "").strip(),
