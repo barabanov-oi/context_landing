@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Редактирование блока «Обо мне»{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1 class="h3 mb-0">Блок «Обо мне»</h1>
+      <a class="btn btn-outline-light" href="{{ url_for('admin_list') }}">Назад в админку</a>
+    </div>
+
+    <div class="card-glass p-4">
+      <form method="post">
+        <label class="form-label" for="about_me_title">Заголовок</label>
+        <input
+          type="text"
+          class="form-control mb-3"
+          id="about_me_title"
+          name="about_me_title"
+          value="{{ content.about_me_title }}"
+          required
+        >
+
+        <label class="form-label" for="about_me_text">Текст</label>
+        <textarea
+          class="form-control mb-3"
+          id="about_me_text"
+          name="about_me_text"
+          rows="6"
+          required
+        >{{ content.about_me_text }}</textarea>
+
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

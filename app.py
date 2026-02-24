@@ -27,6 +27,7 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 
 DATA_FILE = Path("data/cases.json")
 USERS_FILE = Path("data/users.json")
+SITE_CONTENT_FILE = Path("data/site_content.json")
 YANDEX_DIRECT_API_URL = "https://api.direct.yandex.com/json/v5/customers"
 UPLOADS_DIR = Path("static/uploads/covers")
 EDITOR_UPLOADS_DIR = Path("static/uploads/editor")
@@ -93,6 +94,31 @@ def save_users(users: list[dict[str, Any]]) -> None:
     USERS_FILE.parent.mkdir(parents=True, exist_ok=True)
     with USERS_FILE.open("w", encoding="utf-8") as file:
         json.dump(users, file, ensure_ascii=False, indent=2)
+
+
+def load_site_content() -> dict[str, str]:
+    default_content = {
+        "about_me_title": "Обо мне",
+        "about_me_text": (
+            "Я специалист по контекстной рекламе в формате резюме-портфолио: "
+            "помогаю бизнесу получать прогнозируемые заявки и показываю результат на реальных кейсах."
+        ),
+    }
+    if not SITE_CONTENT_FILE.exists():
+        return default_content
+
+    with SITE_CONTENT_FILE.open("r", encoding="utf-8") as file:
+        content = json.load(file)
+
+    content.setdefault("about_me_title", default_content["about_me_title"])
+    content.setdefault("about_me_text", default_content["about_me_text"])
+    return content
+
+
+def save_site_content(content: dict[str, str]) -> None:
+    SITE_CONTENT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with SITE_CONTENT_FILE.open("w", encoding="utf-8") as file:
+        json.dump(content, file, ensure_ascii=False, indent=2)
 
 
 def find_user(email: str) -> dict[str, Any] | None:
@@ -231,6 +257,7 @@ def validate_direct_connection(token: str, login: str) -> tuple[bool, str]:
 @app.route("/")
 def index() -> str:
     cases = load_cases()
+    site_content = load_site_content()
 
     niches = sorted({case.get("niche", "").strip() for case in cases if case.get("niche")})
     sources = sorted(
@@ -262,6 +289,7 @@ def index() -> str:
         sources=sources,
         selected_niche=selected_niche,
         selected_source=selected_source,
+        site_content=site_content,
     )
 
 
@@ -464,6 +492,32 @@ def admin_upload_editor_image():
 @admin_required
 def admin_list() -> str:
     return render_template("admin_list.html", cases=load_cases())
+
+
+@app.route("/admin/content", methods=["GET", "POST"])
+@admin_required
+def admin_content() -> str:
+    content = load_site_content()
+
+    if request.method == "POST":
+        about_me_title = request.form.get("about_me_title", "").strip()
+        about_me_text = request.form.get("about_me_text", "").strip()
+
+        if not about_me_title or not about_me_text:
+            flash("Заполните заголовок и текст блока «Обо мне».", "danger")
+            return render_template("admin_content.html", content=content)
+
+        content.update(
+            {
+                "about_me_title": about_me_title,
+                "about_me_text": about_me_text,
+            }
+        )
+        save_site_content(content)
+        flash("Блок «Обо мне» обновлён.", "success")
+        return redirect(url_for("admin_content"))
+
+    return render_template("admin_content.html", content=content)
 
 
 @app.route("/admin/cases/new", methods=["GET", "POST"])
