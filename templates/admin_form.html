@@ -159,15 +159,55 @@
   const quill = new Quill('#editor', {
     theme: 'snow',
     modules: {
-      toolbar: [
+      toolbar: {
+        container: [
         [{ header: [1, 2, 3, false] }],
         ['bold', 'italic', 'underline', 'strike'],
         [{ list: 'ordered'}, { list: 'bullet' }],
-        ['link', 'blockquote', 'code-block'],
+        ['link', 'blockquote', 'code-block', 'image'],
         ['clean']
-      ]
+      ],
+        handlers: {
+          image: selectAndUploadImage
+        }
+      }
     }
   });
+
+  async function selectAndUploadImage() {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/png,image/jpeg,image/webp,image/gif');
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files && input.files[0];
+      if (!file) {
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      try {
+        const response = await fetch('{{ url_for('admin_upload_editor_image') }}', {
+          method: 'POST',
+          body: formData
+        });
+
+        const payload = await response.json();
+        if (!response.ok || !payload.url) {
+          throw new Error(payload.error || 'Не удалось загрузить изображение.');
+        }
+
+        const range = quill.getSelection(true) || { index: quill.getLength() };
+        quill.insertEmbed(range.index, 'image', payload.url, 'user');
+        quill.setSelection(range.index + 1, 0);
+      } catch (error) {
+        alert(error.message || 'Ошибка загрузки изображения.');
+      }
+    };
+  }
 
   document.getElementById('case-form').addEventListener('submit', function () {
     document.getElementById('custom_content_input').value = quill.root.innerHTML;

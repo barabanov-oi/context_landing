@@ -11,6 +11,7 @@ from flask import (
     Flask,
     abort,
     flash,
+    jsonify,
     redirect,
     render_template,
     request,
@@ -28,6 +29,7 @@ DATA_FILE = Path("data/cases.json")
 USERS_FILE = Path("data/users.json")
 YANDEX_DIRECT_API_URL = "https://api.direct.yandex.com/json/v5/customers"
 UPLOADS_DIR = Path("static/uploads/covers")
+EDITOR_UPLOADS_DIR = Path("static/uploads/editor")
 ALLOWED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 
 
@@ -132,6 +134,24 @@ def save_cover_file(file_storage) -> str | None:
     file_path = UPLOADS_DIR / unique_name
     file_storage.save(file_path)
     return f"uploads/covers/{unique_name}"
+
+
+
+
+def save_editor_image_file(file_storage) -> str | None:
+    filename = secure_filename(file_storage.filename or "")
+    if not filename:
+        return None
+
+    extension = Path(filename).suffix.lower()
+    if extension not in ALLOWED_IMAGE_EXTENSIONS:
+        return None
+
+    EDITOR_UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    unique_name = f"{uuid.uuid4().hex}{extension}"
+    file_path = EDITOR_UPLOADS_DIR / unique_name
+    file_storage.save(file_path)
+    return f"uploads/editor/{unique_name}"
 
 
 def admin_required(handler):
@@ -378,6 +398,22 @@ def admin_logout() -> str:
     session.pop("is_admin", None)
     flash("Вы вышли из админки.", "info")
     return redirect(url_for("index"))
+
+
+
+
+@app.route("/admin/editor/upload-image", methods=["POST"])
+@admin_required
+def admin_upload_editor_image():
+    uploaded_image = request.files.get("image")
+    if uploaded_image is None or not uploaded_image.filename:
+        return jsonify({"error": "Файл изображения не передан."}), 400
+
+    saved_image = save_editor_image_file(uploaded_image)
+    if saved_image is None:
+        return jsonify({"error": "Поддерживаются только изображения: PNG, JPG, JPEG, WEBP, GIF."}), 400
+
+    return jsonify({"url": url_for("static", filename=saved_image)})
 
 
 @app.route("/admin/cases")
