@@ -6,50 +6,76 @@
 <style>
   .ql-toolbar, .ql-container { background: #fff; color: #111; }
   #editor { min-height: 220px; }
+  .form-block-title { font-size: .95rem; letter-spacing: .02em; text-transform: uppercase; color: rgba(255,255,255,.75); }
 </style>
 {% endblock %}
 
 {% block content %}
 <h1 class="h3 mb-3">{% if case %}Редактирование кейса{% else %}Новый кейс{% endif %}</h1>
-<form method="post" class="card-glass p-4" id="case-form">
-  <div class="row g-3">
-    <div class="col-md-8">
-      <label class="form-label">Заголовок</label>
-      <input class="form-control" name="title" value="{{ case.title if case else '' }}" required>
+<form method="post" id="case-form">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card-glass p-4 h-100">
+        <p class="form-block-title mb-3">Карточка кейса</p>
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Заголовок</label>
+            <input class="form-control" name="title" maxlength="90" value="{{ case.title if case else '' }}" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Подзаголовок</label>
+            <input class="form-control" name="subtitle" maxlength="110" value="{{ case.subtitle if case else '' }}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Срок</label>
+            <input class="form-control" name="duration" maxlength="30" value="{{ case.duration if case else '' }}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Теги</label>
+            <input class="form-control" name="tags" maxlength="120" value="{{ case.tags|join(', ') if case else '' }}" placeholder="через запятую">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Тизер</label>
+            <textarea class="form-control" rows="3" maxlength="220" name="teaser">{{ case.teaser if case else '' }}</textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Метрика 1</label>
+            <input class="form-control" name="metric_1" maxlength="35" value="{{ case.metric_1 if case else '' }}">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Метрика 2</label>
+            <input class="form-control" name="metric_2" maxlength="35" value="{{ case.metric_2 if case else '' }}">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Метрика 3</label>
+            <input class="form-control" name="metric_3" maxlength="35" value="{{ case.metric_3 if case else '' }}">
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="col-md-4">
-      <label class="form-label">Срок</label>
-      <input class="form-control" name="duration" value="{{ case.duration if case else '' }}">
-    </div>
-    <div class="col-12">
-      <label class="form-label">Подзаголовок</label>
-      <input class="form-control" name="subtitle" value="{{ case.subtitle if case else '' }}">
-    </div>
-    <div class="col-12">
-      <label class="form-label">Теги (через запятую)</label>
-      <input class="form-control" name="tags" value="{{ case.tags|join(', ') if case else '' }}">
-    </div>
-    <div class="col-12">
-      <label class="form-label">Тизер</label>
-      <textarea class="form-control" rows="2" name="teaser">{{ case.teaser if case else '' }}</textarea>
-    </div>
-    <div class="col-md-4"><label class="form-label">Метрика 1</label><input class="form-control" name="metric_1" value="{{ case.metric_1 if case else '' }}"></div>
-    <div class="col-md-4"><label class="form-label">Метрика 2</label><input class="form-control" name="metric_2" value="{{ case.metric_2 if case else '' }}"></div>
-    <div class="col-md-4"><label class="form-label">Метрика 3</label><input class="form-control" name="metric_3" value="{{ case.metric_3 if case else '' }}"></div>
-    <div class="col-12"><label class="form-label">Задача</label><textarea class="form-control" rows="2" name="task">{{ case.task if case else '' }}</textarea></div>
-    <div class="col-12"><label class="form-label">Гипотеза</label><textarea class="form-control" rows="2" name="hypothesis">{{ case.hypothesis if case else '' }}</textarea></div>
-    <div class="col-12"><label class="form-label">Действия</label><textarea class="form-control" rows="4" name="actions">{{ case.actions if case else '' }}</textarea></div>
-    <div class="col-12"><label class="form-label">Результат</label><textarea class="form-control" rows="2" name="result">{{ case.result if case else '' }}</textarea></div>
-    <div class="col-12"><label class="form-label">Выводы</label><textarea class="form-control" rows="2" name="conclusion">{{ case.conclusion if case else '' }}</textarea></div>
 
-    <div class="col-12">
-      <label class="form-label">Кастомный HTML-контент кейса</label>
-      <div id="editor">{{ case.custom_content|safe if case else '' }}</div>
-      <input type="hidden" name="custom_content" id="custom_content_input">
-      <small class="text-muted-1">Этот блок выводится на странице кейса после основных разделов.</small>
+    <div class="col-lg-7">
+      <div class="card-glass p-4 mb-4">
+        <p class="form-block-title mb-3">Основное содержание</p>
+        <div class="row g-3">
+          <div class="col-12"><label class="form-label">Задача</label><textarea class="form-control" rows="2" maxlength="350" name="task">{{ case.task if case else '' }}</textarea></div>
+          <div class="col-12"><label class="form-label">Гипотеза</label><textarea class="form-control" rows="2" maxlength="350" name="hypothesis">{{ case.hypothesis if case else '' }}</textarea></div>
+          <div class="col-12"><label class="form-label">Действия</label><textarea class="form-control" rows="4" maxlength="1200" name="actions">{{ case.actions if case else '' }}</textarea></div>
+          <div class="col-12"><label class="form-label">Результат</label><textarea class="form-control" rows="2" maxlength="350" name="result">{{ case.result if case else '' }}</textarea></div>
+          <div class="col-12"><label class="form-label">Выводы</label><textarea class="form-control" rows="2" maxlength="350" name="conclusion">{{ case.conclusion if case else '' }}</textarea></div>
+        </div>
+      </div>
+
+      <div class="card-glass p-4">
+        <p class="form-block-title mb-3">Кастомный HTML-контент</p>
+        <div id="editor">{{ case.custom_content|safe if case else '' }}</div>
+        <input type="hidden" name="custom_content" id="custom_content_input">
+        <small class="text-muted-1">Этот блок выводится на странице кейса после основных разделов.</small>
+      </div>
     </div>
   </div>
-  <div class="mt-3 d-flex gap-2">
+
+  <div class="mt-4 d-flex gap-2">
     <button class="btn btn-primary" type="submit">Сохранить</button>
     <a class="btn btn-outline-light" href="{{ url_for('admin_list') }}">Отмена</a>
   </div>
