@@ -6,9 +6,36 @@
   .project-stages { margin: 1rem 0 1.5rem; list-style: none; padding-left: 0; border-left: 2px solid rgba(73, 156, 255, .35); }
   .project-stages li { position: relative; padding: .4rem .2rem 1rem 1.2rem; border-bottom: 1px dashed rgba(255,255,255,.15); }
   .project-stages li::before { content: ''; position: absolute; left: -9px; top: .62rem; width: 14px; height: 14px; border-radius: 999px; background: #0d6efd; box-shadow: 0 0 0 5px rgba(13,110,253,.2); }
-  .custom-content img { max-height: 300px; width: auto; max-width: 100%; border-radius: 8px; cursor: zoom-in; }
-  .custom-content .custom-gallery { display: flex; gap: .75rem; overflow-x: auto; padding-bottom: .4rem; }
-  .custom-content .custom-gallery img { flex: 0 0 auto; }
+  .custom-content img {
+    max-height: 300px;
+    width: min(100%, 460px);
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: zoom-in;
+    border: 1px solid rgba(255,255,255,.2);
+    box-shadow: 0 10px 24px rgba(0,0,0,.28);
+    display: block;
+    margin: 0 auto;
+  }
+  .custom-content .custom-gallery {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .75rem;
+    overflow-x: auto;
+    padding: .35rem 0 .55rem;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 14px;
+    background: rgba(255,255,255,.04);
+  }
+  .custom-content .custom-gallery img {
+    flex: 0 0 280px;
+    width: 280px;
+    height: 220px;
+    max-height: 220px;
+    object-fit: cover;
+    margin: 0;
+  }
   .image-lightbox { position: fixed; inset: 0; background: rgba(4,10,20,.92); display: none; align-items: center; justify-content: center; z-index: 9999; }
   .image-lightbox.open { display: flex; }
   .image-lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 10px; }
@@ -54,7 +81,7 @@
 
   {% if case.custom_content %}
     <hr>
-    <section class="mt-4 custom-content" id="custom-content-block">
+    <section class="mt-4 custom-content text-center" id="custom-content-block">
       {{ case.custom_content|safe }}
     </section>
   {% endif %}
