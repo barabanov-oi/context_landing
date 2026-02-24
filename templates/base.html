@@ -12,6 +12,7 @@
     .pill { display:inline-block; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: .2rem .6rem; margin-right: .35rem; margin-bottom: .35rem; color: rgba(255,255,255,.88); font-size: .85rem; }
     .metric { border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: .5rem .7rem; }
   </style>
+  {% block head_extra %}{% endblock %}
 </head>
 <body>
 <nav class="navbar navbar-dark border-bottom border-secondary-subtle mb-4">
@@ -19,7 +20,12 @@
     <a class="navbar-brand" href="{{ url_for('index') }}">Портфолио • Яндекс Директ</a>
     <div class="d-flex gap-2">
       <a class="btn btn-outline-light btn-sm" href="{{ url_for('index') }}">Лента кейсов</a>
-      <a class="btn btn-primary btn-sm" href="{{ url_for('admin_list') }}">Админка</a>
+      {% if session.get('is_admin') %}
+        <a class="btn btn-primary btn-sm" href="{{ url_for('admin_list') }}">Админка</a>
+        <a class="btn btn-outline-warning btn-sm" href="{{ url_for('admin_logout') }}">Выйти</a>
+      {% else %}
+        <a class="btn btn-primary btn-sm" href="{{ url_for('admin_login') }}">Вход в админку</a>
+      {% endif %}
     </div>
   </div>
 </nav>
@@ -34,5 +40,6 @@
   {% endwith %}
   {% block content %}{% endblock %}
 </main>
+{% block scripts %}{% endblock %}
 </body>
 </html>

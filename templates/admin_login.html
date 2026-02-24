@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Вход в админку{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-4">
+    <div class="card-glass p-4">
+      <h1 class="h4 mb-3">Вход в админку</h1>
+      <form method="post">
+        <label class="form-label">Пароль</label>
+        <input type="password" name="password" class="form-control mb-3" required>
+        <button class="btn btn-primary w-100" type="submit">Войти</button>
+      </form>
+      <p class="text-muted-1 small mt-3 mb-0">Пароль можно задать через переменную окружения <code>ADMIN_PASSWORD</code>.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

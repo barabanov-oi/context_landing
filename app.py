@@ -1,12 +1,24 @@
 import json
+import os
 import re
+from functools import wraps
 from pathlib import Path
 from typing import Any
 
-from flask import Flask, abort, flash, redirect, render_template, request, url_for
+from flask import (
+    Flask,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 app = Flask(__name__)
-app.secret_key = "context-landing-secret"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "context-landing-secret")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 
 DATA_FILE = Path("data/cases.json")
 
@@ -23,7 +35,11 @@ def load_cases() -> list[dict[str, Any]]:
     if not DATA_FILE.exists():
         return []
     with DATA_FILE.open("r", encoding="utf-8") as file:
-        return json.load(file)
+        cases = json.load(file)
+
+    for case in cases:
+        case.setdefault("custom_content", "")
+    return cases
 
 
 def save_cases(cases: list[dict[str, Any]]) -> None:
@@ -32,8 +48,7 @@ def save_cases(cases: list[dict[str, Any]]) -> None:
 
 
 def find_case(slug: str) -> dict[str, Any] | None:
-    cases = load_cases()
-    for case in cases:
+    for case in load_cases():
         if case["slug"] == slug:
             return case
     return None
@@ -57,6 +72,17 @@ def parse_tags(tags: str) -> list[str]:
     return [part.strip() for part in tags.split(",") if part.strip()]
 
 
+def admin_required(handler):
+    @wraps(handler)
+    def wrapped(*args, **kwargs):
+        if not session.get("is_admin"):
+            flash("Войдите в админку.", "warning")
+            return redirect(url_for("admin_login", next=request.path))
+        return handler(*args, **kwargs)
+
+    return wrapped
+
+
 @app.route("/")
 def index() -> str:
     return render_template("index.html", cases=load_cases())
@@ -70,12 +96,34 @@ def case_detail(slug: str) -> str:
     return render_template("case_detail.html", case=case)
 
 
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login() -> str:
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        if password == ADMIN_PASSWORD:
+            session["is_admin"] = True
+            flash("Вход выполнен.", "success")
+            target = request.args.get("next") or url_for("admin_list")
+            return redirect(target)
+        flash("Неверный пароль.", "danger")
+    return render_template("admin_login.html")
+
+
+@app.route("/admin/logout")
+def admin_logout() -> str:
+    session.pop("is_admin", None)
+    flash("Вы вышли из админки.", "info")
+    return redirect(url_for("index"))
+
+
 @app.route("/admin")
+@admin_required
 def admin_list() -> str:
     return render_template("admin_list.html", cases=load_cases())
 
 
 @app.route("/admin/cases/new", methods=["GET", "POST"])
+@admin_required
 def admin_new_case() -> str:
     if request.method == "POST":
         title = request.form.get("title", "").strip()
@@ -98,6 +146,7 @@ def admin_new_case() -> str:
             "actions": request.form.get("actions", "").strip(),
             "result": request.form.get("result", "").strip(),
             "conclusion": request.form.get("conclusion", "").strip(),
+            "custom_content": request.form.get("custom_content", "").strip(),
             "tags": parse_tags(request.form.get("tags", "")),
         }
         cases.append(case_data)
@@ -109,6 +158,7 @@ def admin_new_case() -> str:
 
 
 @app.route("/admin/cases/<slug>/edit", methods=["GET", "POST"])
+@admin_required
 def admin_edit_case(slug: str) -> str:
     cases = load_cases()
     case = next((item for item in cases if item["slug"] == slug), None)
@@ -136,6 +186,7 @@ def admin_edit_case(slug: str) -> str:
                 "actions": request.form.get("actions", "").strip(),
                 "result": request.form.get("result", "").strip(),
                 "conclusion": request.form.get("conclusion", "").strip(),
+                "custom_content": request.form.get("custom_content", "").strip(),
                 "tags": parse_tags(request.form.get("tags", "")),
             }
         )
