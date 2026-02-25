@@ -4,22 +4,26 @@
 {% block head_extra %}
 <style>
   .hero-block { background: linear-gradient(135deg, #1d4ed8 0%, #0b5ed7 50%, #0f766e 100%); border-radius: 20px; padding: 2rem; border: 1px solid rgba(255,255,255,.2); }
+  .hero-kpi-frame {
+    width: 75%;
+    margin: 0 auto 1.5rem;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 16px;
+  }
+
   .hero-kpi {
-    background: rgba(6, 18, 36, .35);
-    border: 1px solid rgba(255,255,255,.24);
-    border-radius: 999px;
-    width: 50%;
-    aspect-ratio: 1 / 1;
+    width: 100%;
+    min-height: 9.5rem;
     padding: .5rem;
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     text-align: center;
   }
   .hero-kpi .value { font-size: clamp(2.2rem, 7vw, 7.68rem); font-weight: 800; display: block; line-height: 1; }
-  .hero-kpi .label { font-size: 1.28rem; color: rgba(240,247,255,.9); margin-top: .35rem; line-height: 1.15; }
+  .hero-kpi .label { font-size: 1.28rem; color: rgba(240,247,255,.9); margin-top: .35rem; line-height: 1.15; max-width: 15ch; }
 
   .hero-title { text-align: center; margin-top: 2em; margin-bottom: 2em; }
 
@@ -49,7 +53,8 @@
 
   @media (max-width: 767px) {
     .hero-block { padding: 1.4rem; }
-    .hero-kpi { width: 60%; }
+    .hero-kpi-frame { width: 100%; padding: .7rem; }
+    .hero-kpi { min-height: auto; }
     .hero-kpi .value { font-size: clamp(2rem, 16vw, 4.2rem); }
     .hero-kpi .label { font-size: .95rem; }
     .hero-title { margin-top: 2em; margin-bottom: 2em; }
@@ -60,7 +65,8 @@
 {% block content %}
 <section class="hero-block mb-4">
   <h1 class="display-6 fw-bold hero-title">Помощь в росте конверсий, лидов, продаж, выручки</h1>
-  <div class="row g-2 mb-3">
+  <div class="hero-kpi-frame">
+    <div class="row g-2">
     <div class="col-md-4">
       <div class="hero-kpi animate-kpi" data-count-target="8" data-count-suffix="">
         <span class="value">0</span>
@@ -74,10 +80,11 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="hero-kpi animate-kpi" data-count-target="40000000" data-count-suffix=" руб./мес." data-count-prefix="" data-count-postfix="">
+      <div class="hero-kpi animate-kpi" data-count-target="40000000" data-count-suffix="" data-count-prefix="" data-count-postfix="">
         <span class="value">0</span>
-        <span class="label">максимальный бюджет одного размещения</span>
+        <span class="label">руб./мес. максимальный бюджет одного размещения</span>
       </div>
+    </div>
     </div>
   </div>
   <p class="mb-2 fs-5">Работаю с реально важными для бизнеса показателями: CPA, CPL, CPO, ДРР, ROI, ROMI</p>
