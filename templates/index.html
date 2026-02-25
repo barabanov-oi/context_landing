@@ -4,8 +4,28 @@
 {% block head_extra %}
 <style>
   .hero-block { background: linear-gradient(135deg, #1d4ed8 0%, #0b5ed7 50%, #0f766e 100%); border-radius: 20px; padding: 2rem; border: 1px solid rgba(255,255,255,.2); }
-  .hero-kpi { background: rgba(6, 18, 36, .35); border: 1px solid rgba(255,255,255,.24); border-radius: 12px; padding: .75rem 1rem; }
-  .hero-kpi .value { font-size: 1.3rem; font-weight: 800; display: block; }
+  .hero-kpi-frame {
+    width: 75%;
+    margin: 0 auto 1.5rem;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 16px;
+  }
+
+  .hero-kpi {
+    width: 100%;
+    min-height: 9.5rem;
+    padding: .5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+  }
+  .hero-kpi .value { font-size: 4em; font-weight: 800; display: block; line-height: 1; }
+  .hero-kpi .label { font-size: 1.28rem; color: rgba(240,247,255,.9); margin-top: .35rem; line-height: 1.15; max-width: 15ch; }
+
+  .hero-title { text-align: center; margin-top: 2em; margin-bottom: 2em; }
 
   .warmup-list li { margin-bottom: .45rem; color: rgba(232,240,255,.92); }
 
@@ -24,6 +44,7 @@
   .source-content { background: rgba(255, 193, 7, .2); color: #ffe18e; border: 1px solid rgba(255,193,7,.45); }
 
   .animate-kpi { animation: pulseMetric .9s ease both; }
+  .hero-kpi.is-visible .value { animation: pulseMetric .8s ease both; }
   @keyframes pulseMetric { from { transform: scale(.95); opacity: .6; } to { transform: scale(1); opacity: 1; } }
 
   .timeline { border-left: 2px solid rgba(125,181,255,.55); margin: 0; padding-left: 1rem; list-style: none; }
@@ -32,19 +53,42 @@
 
   @media (max-width: 767px) {
     .hero-block { padding: 1.4rem; }
+    .hero-kpi-frame { width: 100%; padding: .7rem; }
+    .hero-kpi { min-height: auto; }
+    .hero-kpi .value { font-size: 4em; }
+    .hero-kpi .label { font-size: .95rem; }
+    .hero-title { margin-top: 2em; margin-bottom: 2em; }
   }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="hero-block mb-4">
-  <h1 class="display-6 fw-bold mb-2">Лидогенерация для юридических услуг через Яндекс Директ</h1>
-  <p class="mb-3 fs-5">Показываем реальные кейсы с прозрачными метриками: сколько лидов получили, какой был бюджет и какая стоимость обращения.</p>
-  <div class="row g-2 mb-3">
-    <div class="col-md-4"><div class="hero-kpi animate-kpi"><span class="value">CPL от 2 800 ₽</span><span>в юридической нише</span></div></div>
-    <div class="col-md-4"><div class="hero-kpi animate-kpi"><span class="value">3000+ лидов</span><span>для юристов и адвокатов</span></div></div>
-    <div class="col-md-4"><div class="hero-kpi animate-kpi"><span class="value">8 лет опыта</span><span>в legal performance</span></div></div>
+  <h1 class="display-6 fw-bold hero-title">Помощь в росте конверсий, лидов, продаж, выручки</h1>
+  <div class="hero-kpi-frame">
+    <div class="row g-2">
+    <div class="col-md-4">
+      <div class="hero-kpi animate-kpi" data-count-target="8" data-count-suffix="">
+        <span class="value">0</span>
+        <span class="label">лет опыта в digital</span>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="hero-kpi animate-kpi" data-count-target="18" data-count-suffix="">
+        <span class="value">0</span>
+        <span class="label">различных ниш</span>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="hero-kpi animate-kpi" data-count-target="40000000" data-count-suffix="" data-count-prefix="" data-count-postfix="" data-count-split="true">
+        <span class="value">0</span>
+        <span class="label">руб./мес. максимальный бюджет одного размещения</span>
+      </div>
+    </div>
+    </div>
   </div>
+  <p class="mb-2 fs-5">Работаю с реально важными для бизнеса показателями: CPA, CPL, CPO, ДРР, ROI, ROMI</p>
+  <p class="mb-3 fs-6 text-light">Работаю со сквозной аналитикой: calltouch, Roistat, АМОCrm, Битрикс24</p>
   <div class="d-flex gap-2 flex-wrap">
     <a href="#cases" class="btn btn-light">Посмотреть кейсы</a>
     <a href="#contacts" class="btn btn-outline-light">Получить аудит рекламы</a>
@@ -162,4 +206,58 @@
     </article>
   </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const formatNumber = (value) => new Intl.NumberFormat('ru-RU').format(value);
+    const cards = document.querySelectorAll('.hero-kpi[data-count-target]');
+
+    const animateNumber = (card) => {
+      if (card.dataset.animated === 'true') return;
+      const target = Number(card.dataset.countTarget || 0);
+      const suffix = card.dataset.countSuffix || '';
+      const postfix = card.dataset.countPostfix || '';
+      const valueEl = card.querySelector('.value');
+      const duration = 1200;
+      const startedAt = performance.now();
+
+      const renderValue = (rawValue, isFinal = false) => {
+        const formatted = `${formatNumber(rawValue)}${suffix}${isFinal ? postfix : ''}`;
+        if (card.dataset.countSplit === 'true' && isFinal) {
+          valueEl.innerHTML = formatted.replace('40 000 000', '40<br>000 000');
+          return;
+        }
+        valueEl.textContent = formatted;
+      };
+
+      const tick = (now) => {
+        const progress = Math.min((now - startedAt) / duration, 1);
+        const current = Math.floor(target * progress);
+        renderValue(current);
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+          return;
+        }
+        renderValue(target, true);
+        card.classList.add('is-visible');
+      };
+
+      card.dataset.animated = 'true';
+      requestAnimationFrame(tick);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animateNumber(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    cards.forEach((card) => observer.observe(card));
+  });
+</script>
 {% endblock %}
